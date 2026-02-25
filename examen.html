@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preparación V y F  para T.O.M.I - Verdadero o Falso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --warning-color: #f39c12;
+            --card-bg: #ffffff;
+            --text-main: #333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; }
+
+        .app-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+        
+        /* Animaciones */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+        /* Pantallas */
+        .screen { display: none; background: var(--card-bg); border-radius: 20px; padding: 40px; box-shadow: var(--shadow); }
+        .active { display: block; }
+
+        /* Header */
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--secondary-color); font-size: 2.5rem; margin-bottom: 10px; }
+        .subtitle { color: #7f8c8d; font-weight: 300; }
+
+        /* Menú Principal */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .mode-card { border: 2px solid #eee; padding: 30px; border-radius: 15px; cursor: pointer; transition: 0.3s; text-align: center; }
+        .mode-card:hover { border-color: var(--primary-color); background: #f9fbff; transform: translateY(-5px); }
+        .mode-card h3 { margin-bottom: 15px; color: var(--primary-color); }
+        .mode-card p { font-size: 0.9rem; color: #666; }
+
+        /* Botones */
+        .btn { padding: 12px 25px; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-weight: 600; transition: 0.2s; font-size: 1rem; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-v { background: var(--success-color); color: white; flex: 1; font-size: 1.2rem; padding: 20px; }
+        .btn-f { background: var(--error-color); color: white; flex: 1; font-size: 1.2rem; padding: 20px; }
+        .btn-back { background: transparent; color: #7f8c8d; border: 1px solid #ddd; margin-bottom: 20px; }
+        .btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+        /* UI Juego */
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #f8f9fa; padding: 15px 25px; border-radius: 12px; }
+        .stat-box { text-align: center; }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; color: #95a5a6; }
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--secondary-color); }
+
+        .question-box { margin: 30px 0; min-height: 120px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.4rem; font-weight: 500; color: var(--secondary-color); border-left: 5px solid var(--primary-color); padding-left: 20px; }
+
+        .button-group { display: flex; gap: 20px; }
+
+        /* Feedback Iniciante */
+        .feedback-area { margin-top: 25px; padding: 20px; border-radius: 12px; display: none; border: 2px solid transparent; }
+        .feedback-correct { background: #e9f7ef; border-color: var(--success-color); color: #1e8449; }
+        .feedback-wrong { background: #fdedec; border-color: var(--error-color); color: #943126; }
+
+        /* Resultados */
+        .results-header { text-align: center; margin-bottom: 30px; }
+        .score-circle { width: 150px; height: 150px; border-radius: 50%; border: 8px solid var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; margin: 0 auto 20px; }
+        .review-list { margin-top: 30px; max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .review-item { padding: 15px; border-bottom: 1px solid #eee; margin-bottom: 10px; border-radius: 8px; }
+        .review-item.wrong { border-left: 4px solid var(--error-color); background: #fffcfc; }
+        .review-item.correct { border-left: 4px solid var(--success-color); background: #fcfdfc; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .menu-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>Master TOMI</h1>
+        <p class="subtitle">Preparación para el Examen de Matemática</p>
+    </header>
+
+    <div id="home-screen" class="screen active fade-in">
+        <div class="menu-grid">
+            <div class="mode-card" onclick="openOptions('iniciante')">
+                <h3>🟢 Modo Iniciante</h3>
+                <p>Elige rondas (16 c/u). Puntaje visible y justificación inmediata para aprender de cada error.</p>
+            </div>
+            <div class="mode-card" onclick="startSerio()">
+                <h3>🔴 Modo Serio</h3>
+                <p>16 preguntas aleatorias sin ayuda. Los resultados y justificaciones se muestran solo al final.</p>
+            </div>
+        </div>
+        
+        <div id="iniciante-options" style="display:none; margin-top:30px; text-align:center;" class="fade-in">
+            <h4 style="margin-bottom:15px;">Selecciona duración:</h4>
+            <button class="btn btn-primary" onclick="startIniciante(1)" style="margin:5px;">1 Ronda (16 Preg.)</button>
+            <button class="btn btn-primary" onclick="startIniciante(2)" style="margin:5px;">2 Rondas (32 Preg.)</button>
+            <button class="btn btn-primary" onclick="startIniciante(3)" style="margin:5px;">3 Rondas (48 Preg.)</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen fade-in">
+        <button class="btn btn-back" onclick="goToMain()">← Salir al Menú</button>
+        
+        <div class="game-header">
+            <div class="stat-box">
+                <div class="stat-label">Pregunta</div>
+                <div class="stat-value"><span id="curr-q">1</span>/<span id="total-q">16</span></div>
+            </div>
+            <div id="score-container" class="stat-box">
+                <div class="stat-label">Puntaje</div>
+                <div class="stat-value" id="live-score">16.0</div>
+            </div>
+        </div>
+
+        <div class="question-box" id="question-text">
+            Cargando pregunta...
+        </div>
+
+        <div class="button-group" id="action-buttons">
+            <button class="btn btn-v" onclick="handleAnswer(true)">VERDADERO</button>
+            <button class="btn btn-f" onclick="handleAnswer(false)">FALSO</button>
+        </div>
+
+        <div id="feedback-panel" class="feedback-area">
+            <h4 id="feedback-title"></h4>
+            <p id="feedback-text"></p>
+            <button class="btn btn-primary" onclick="nextQuestion()" style="margin-top:15px; width:100%;">Siguiente ➔</button>
+        </div>
+    </div>
+
+    <div id="results-screen" class="screen fade-in">
+        <div class="results-header">
+            <h2 id="final-msg">¡Resultados!</h2>
+            <div class="score-circle" id="final-score">0.0</div>
+            <p id="final-subtext"></p>
+        </div>
+
+        <div class="review-list" id="review-container">
+            </div>
+
+        <button class="btn btn-primary" onclick="goToMain()" style="width:100%; margin-top:30px; padding:20px;">Volver a Intentar</button>
+    </div>
+</div>
+
+<script>
+    // Banco completo de preguntas basado en las fuentes proporcionadas [cite: 1, 2, 3, 4, 5]
+    const questionsBank = [
+        { q: "El método de Ruffini puede usarse para dividir cualquier polinomio entre otro de cualquier grado.", a: false, j: "Ruffini solo es válido cuando el divisor es de primer grado (forma x ± a)." },
+        { q: "Dos funciones lineales distintas pueden tener la misma pendiente.", a: true, j: "Sí, en ese caso las rectas son paralelas." },
+        { q: "Todo número real tiene una representación decimal finita o infinita.", a: true, j: "Correcto. Los racionales son finitos o periódicos, y los irracionales son infinitos no periódicos." },
+        { q: "Un polinomio de grado 3 siempre tiene exactamente tres raíces reales.", a: false, j: "Falso. Siempre tiene 3 raíces, pero algunas pueden ser complejas (vienen en pares)." },
+        { q: "√2 es un número racional.", a: false, j: "√2 es un número irracional clásico, no puede escribirse como fracción de enteros." },
+        { q: "Si una función lineal tiene pendiente positiva, su imagen siempre es positiva.", a: false, j: "Falso. La imagen de una lineal no constante son todos los reales (-∞, +∞)." },
+        { q: "Si y = 3x + 2, entonces y es directamente proporcional a x.", a: false, j: "No, porque no pasa por el origen (0,0). Si x=0, y=2." },
+        { q: "Si a > 0 en una función cuadrática, la parábola 'abre' hacia abajo.", a: false, j: "Falso. Si a > 0, la parábola abre hacia arriba (cóncava hacia arriba)." },
+        { q: "La división de números reales es siempre un real.", a: false, j: "Falso. La división por cero no existe en los reales." },
+        { q: "Si la pendiente de una función lineal es cero, entonces la función es constante.", a: true, j: "Correcto. Se obtiene una recta horizontal." },
+        { q: "El número 0,3333... periódico es un número irracional.", a: false, j: "Falso. Los números periódicos son racionales (ej: 1/3)." },
+        { q: "Un polinomio de grado 4 no puede tener coeficientes negativos.", a: false, j: "Falso. Los coeficientes pueden ser cualquier número real." },
+        { q: "Si a y b son números reales y a < b, entonces a² < b².", a: false, j: "Falso. Ejemplo: -5 < 2, pero (-5)² = 25, que es mayor a 2² = 4." },
+        { q: "Las rectas verticales tienen ecuación x = k con k un número real.", a: true, j: "Correcto. Son constantes en x." },
+        { q: "Si dos funciones lineales se intersectan en un solo punto, entonces sus pendientes son distintas.", a: true, j: "Correcto. Si fueran iguales serían paralelas y no se cortarían (o serían la misma)." },
+        { q: "La pendiente de la recta que contiene a (3,2) y (-5,2) es cero.", a: true, j: "Correcto. Como los valores de Y son iguales, la recta es horizontal." },
+        { q: "Si un polinomio tiene raíz doble en x = a, entonces (x - a) es factor con exponente 2.", a: true, j: "Correcto, es la definición de multiplicidad de raíces." },
+        { q: "La resta de números reales es conmutativa (a - b = b - a).", a: false, j: "Falso. 5 - 2 = 3, pero 2 - 5 = -3." },
+        { q: "Si multiplicamos dos números irracionales, el resultado siempre es irracional.", a: false, j: "Falso. Ejemplo: √2 * √2 = 2 (racional)." },
+        { q: "La gráfica de una relación de proporcionalidad directa es una recta que pasa por el origen.", a: true, j: "Correcto. Sigue la forma y = kx." },
+        { q: "Un tercio de tres quintos de una cantidad es un quinto de la misma.", a: true, j: "Correcto. (1/3) * (3/5) = 1/5." },
+        { q: "En una relación de proporcionalidad inversa, el cociente entre magnitudes es constante.", a: false, j: "Falso. En la inversa lo constante es el PRODUCTO (x*y = k)." },
+        { q: "j(x) = -2x^(5/2) + 1 no es un polinomio.", a: true, j: "Correcto. Los exponentes de un polinomio deben ser números naturales." },
+        { q: "(a + b)² - (a - b)² = 4ab.", a: true, j: "Correcto. Al desarrollar los binomios y restar, queda 4ab." },
+        { q: "La forma factorizada de 3x² + 3x - 6 es 3(x - 1)(x + 2).", a: true, j: "Correcto. Las raíces son 1 y -2, y el coeficiente principal es 3." },
+        { q: "Si a^2 < b^2 entonces a < b.", a: false, j: "Falso. Ejemplo: (-2)^2 < (-3)^2 es 4 < 9, pero -2 no es menor a -3." }
+    ];
+
+    let state = {
+        mode: '',
+        questions: [],
+        currentIndex: 0,
+        score: 0,
+        results: []
+    };
+
+    function openOptions(mode) {
+        document.getElementById('iniciante-options').style.display = 'block';
+        state.mode = mode;
+    }
+
+    function goToMain() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('home-screen').classList.add('active');
+        document.getElementById('iniciante-options').style.display = 'none';
+    }
+
+    function startIniciante(rondas) {
+        state.mode = 'iniciante';
+        setupGame(rondas * 16);
+    }
+
+    function startSerio() {
+        state.mode = 'serio';
+        setupGame(16);
+    }
+
+    function setupGame(count) {
+        state.questions = [...questionsBank].sort(() => Math.random() - 0.5).slice(0, count);
+        state.currentIndex = 0;
+        state.score = count;
+        state.results = [];
+
+        document.getElementById('total-q').innerText = count;
+        document.getElementById('live-score').innerText = state.score.toFixed(1);
+        document.getElementById('score-container').style.display = (state.mode === 'iniciante') ? 'block' : 'none';
+
+        showScreen('game-screen');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = state.questions[state.currentIndex];
+        document.getElementById('curr-q').innerText = state.currentIndex + 1;
+        document.getElementById('question-text').innerText = q.q;
+        
+        document.getElementById('action-buttons').style.display = 'flex';
+        document.getElementById('feedback-panel').style.display = 'none';
+    }
+
+    function handleAnswer(userAns) {
+        const q = state.questions[state.currentIndex];
+        const isCorrect = userAns === q.a;
+        
+        if (!isCorrect) state.score -= 0.5;
+        
+        state.results.push({ q: q.q, user: userAns, correct: q.a, just: q.j, hit: isCorrect });
+
+        if (state.mode === 'iniciante') {
+            showFeedback(isCorrect, q.j);
+        } else {
+            nextQuestion();
+        }
+    }
+
+    function showFeedback(hit, text) {
+        document.getElementById('action-buttons').style.display = 'none';
+        const panel = document.getElementById('feedback-panel');
+        panel.style.display = 'block';
+        panel.className = 'feedback-area ' + (hit ? 'feedback-correct' : 'feedback-wrong');
+        document.getElementById('feedback-title').innerText = hit ? '¡Excelente! ✨' : 'Ups... Corregimos 📚';
+        document.getElementById('feedback-text').innerText = text;
+        document.getElementById('live-score').innerText = state.score.toFixed(1);
+    }
+
+    function nextQuestion() {
+        state.currentIndex++;
+        if (state.currentIndex < state.questions.length) {
+            loadQuestion();
+        } else {
+            showFinalResults();
+        }
+    }
+
+    function showFinalResults() {
+        showScreen('results-screen');
+        const finalScore = state.score;
+        const totalPossible = state.questions.length;
+        const scoreDisplay = document.getElementById('final-score');
+        const msgDisplay = document.getElementById('final-msg');
+        const subtext = document.getElementById('final-subtext');
+
+        scoreDisplay.innerText = finalScore.toFixed(1);
+
+        // Lógica de aprobación específica del Modo Serio
+        if (state.mode === 'serio') {
+            if (finalScore >= 9) {
+                msgDisplay.innerText = "¡Aprobaste para pasar al examen práctico! 🏆";
+                msgDisplay.style.color = "var(--success-color)";
+                subtext.innerText = "Tenés una excelente base teórica.";
+            } else {
+                msgDisplay.innerText = "Tenés que seguir practicando... 📚";
+                msgDisplay.style.color = "var(--error-color)";
+                subtext.innerText = "Probá con el modo inicial para reforzar conceptos.";
+            }
+        } else {
+            msgDisplay.innerText = "¡Entrenamiento Finalizado!";
+            subtext.innerText = `Lograste ${finalScore.toFixed(1)} puntos de ${totalPossible}.`;
+        }
+
+        // Generar revisión
+        const container = document.getElementById('review-container');
+        container.innerHTML = '';
+        state.results.forEach(r => {
+            const item = document.createElement('div');
+            item.className = `review-item ${r.hit ? 'correct' : 'wrong'}`;
+            item.innerHTML = `
+                <p><strong>Pregunta:</strong> ${r.q}</p>
+                <p>Tu respuesta: <b>${r.user ? 'V' : 'F'}</b> | Correcta: <b>${r.correct ? 'V' : 'F'}</b></p>
+                <p style="font-size: 0.85rem; margin-top:5px;"><i>${r.just}</i></p>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+</script>
+
+</body>
+<footer>
+    <p style="text-align:center; padding:20px; font-size:0.8rem; color:#7f8c8d;">Desarrollado por E.D - Ingresante para Ing. Informática - Inspirado en fuentes de estudio de compañeros para el examen de matemática.</p>
+</footer>
+</html>
