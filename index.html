@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preparación V y F  para T.O.M.I - Verdadero o Falso</title>
+    <title>Preparación V y F para T.O.M.I - Verdadero o Falso</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -123,7 +123,7 @@
             </div>
             <div id="score-container" class="stat-box">
                 <div class="stat-label">Puntaje</div>
-                <div class="stat-value" id="live-score">16.0</div>
+                <div class="stat-value" id="live-score">0.0</div>
             </div>
         </div>
 
@@ -158,41 +158,85 @@
 </div>
 
 <script>
-    // Banco completo de preguntas basado en las fuentes proporcionadas [cite: 1, 2, 3, 4, 5]
+    // --- BANCO DE PREGUNTAS ACTUALIZADO (de las imágenes x1.jpg y x2.jpg) ---
     const questionsBank = [
-        { q: "El método de Ruffini puede usarse para dividir cualquier polinomio entre otro de cualquier grado.", a: false, j: "Ruffini solo es válido cuando el divisor es de primer grado (forma x ± a)." },
-        { q: "Dos funciones lineales distintas pueden tener la misma pendiente.", a: true, j: "Sí, en ese caso las rectas son paralelas." },
-        { q: "Todo número real tiene una representación decimal finita o infinita.", a: true, j: "Correcto. Los racionales son finitos o periódicos, y los irracionales son infinitos no periódicos." },
-        { q: "Un polinomio de grado 3 siempre tiene exactamente tres raíces reales.", a: false, j: "Falso. Siempre tiene 3 raíces, pero algunas pueden ser complejas (vienen en pares)." },
-        { q: "√2 es un número racional.", a: false, j: "√2 es un número irracional clásico, no puede escribirse como fracción de enteros." },
-        { q: "Si una función lineal tiene pendiente positiva, su imagen siempre es positiva.", a: false, j: "Falso. La imagen de una lineal no constante son todos los reales (-∞, +∞)." },
-        { q: "Si y = 3x + 2, entonces y es directamente proporcional a x.", a: false, j: "No, porque no pasa por el origen (0,0). Si x=0, y=2." },
-        { q: "Si a > 0 en una función cuadrática, la parábola 'abre' hacia abajo.", a: false, j: "Falso. Si a > 0, la parábola abre hacia arriba (cóncava hacia arriba)." },
-        { q: "La división de números reales es siempre un real.", a: false, j: "Falso. La división por cero no existe en los reales." },
-        { q: "Si la pendiente de una función lineal es cero, entonces la función es constante.", a: true, j: "Correcto. Se obtiene una recta horizontal." },
-        { q: "El número 0,3333... periódico es un número irracional.", a: false, j: "Falso. Los números periódicos son racionales (ej: 1/3)." },
-        { q: "Un polinomio de grado 4 no puede tener coeficientes negativos.", a: false, j: "Falso. Los coeficientes pueden ser cualquier número real." },
-        { q: "Si a y b son números reales y a < b, entonces a² < b².", a: false, j: "Falso. Ejemplo: -5 < 2, pero (-5)² = 25, que es mayor a 2² = 4." },
-        { q: "Las rectas verticales tienen ecuación x = k con k un número real.", a: true, j: "Correcto. Son constantes en x." },
-        { q: "Si dos funciones lineales se intersectan en un solo punto, entonces sus pendientes son distintas.", a: true, j: "Correcto. Si fueran iguales serían paralelas y no se cortarían (o serían la misma)." },
-        { q: "La pendiente de la recta que contiene a (3,2) y (-5,2) es cero.", a: true, j: "Correcto. Como los valores de Y son iguales, la recta es horizontal." },
-        { q: "Si un polinomio tiene raíz doble en x = a, entonces (x - a) es factor con exponente 2.", a: true, j: "Correcto, es la definición de multiplicidad de raíces." },
-        { q: "La resta de números reales es conmutativa (a - b = b - a).", a: false, j: "Falso. 5 - 2 = 3, pero 2 - 5 = -3." },
-        { q: "Si multiplicamos dos números irracionales, el resultado siempre es irracional.", a: false, j: "Falso. Ejemplo: √2 * √2 = 2 (racional)." },
-        { q: "La gráfica de una relación de proporcionalidad directa es una recta que pasa por el origen.", a: true, j: "Correcto. Sigue la forma y = kx." },
-        { q: "Un tercio de tres quintos de una cantidad es un quinto de la misma.", a: true, j: "Correcto. (1/3) * (3/5) = 1/5." },
-        { q: "En una relación de proporcionalidad inversa, el cociente entre magnitudes es constante.", a: false, j: "Falso. En la inversa lo constante es el PRODUCTO (x*y = k)." },
-        { q: "j(x) = -2x^(5/2) + 1 no es un polinomio.", a: true, j: "Correcto. Los exponentes de un polinomio deben ser números naturales." },
-        { q: "(a + b)² - (a - b)² = 4ab.", a: true, j: "Correcto. Al desarrollar los binomios y restar, queda 4ab." },
-        { q: "La forma factorizada de 3x² + 3x - 6 es 3(x - 1)(x + 2).", a: true, j: "Correcto. Las raíces son 1 y -2, y el coeficiente principal es 3." },
-        { q: "Si a^2 < b^2 entonces a < b.", a: false, j: "Falso. Ejemplo: (-2)^2 < (-3)^2 es 4 < 9, pero -2 no es menor a -3." }
+        // MÓDULO 1: CONJUNTOS NUMÉRICOS (desde x1.jpg)
+        { q: "La suma de un número racional y un número irracional es siempre un número irracional.", a: true, j: "Correcto. La suma de un racional y un irracional siempre da irracional." },
+        { q: "El conjunto de los números reales es la unión de los racionales y los irracionales.", a: true, j: "Correcto. Los reales se dividen en racionales e irracionales." },
+        { q: "Entre dos números racionales distintos, siempre existe al menos un número irracional.", a: true, j: "Correcto. Los racionales son densos, pero también hay infinitos irracionales entre ellos (ej. sumando un pequeño irracional)." },
+        { q: "Todo número decimal periódico puede expresarse como una fracción de números enteros.", a: true, j: "Correcto. Esa es la definición de número racional." },
+        { q: "El producto de dos números irracionales puede resultar en un número racional.", a: true, j: "Ejemplo: √2 * √2 = 2 (racional)." },
+        { q: "La raíz cuadrada de cualquier número natural es un número irracional.", a: false, j: "Falso. Por ejemplo, √4 = 2 que es entero (racional). Solo las raíces no exactas son irracionales." },
+        { q: "El número √3 es un número irracional porque tiene infinitas cifras decimales.", a: false, j: "Falso. Tener infinitas cifras no es suficiente (1/3=0.333... es periódico). La característica es que sean infinitas NO periódicas." },
+        { q: "El conjunto de los números enteros (Z) es denso (siempre hay un entero entre otros dos).", a: false, j: "Falso. Entre 2 y 3 no hay ningún entero." },
+        { q: "Si a < b, entonces a^2 < b^2 para cualquier par de números reales a, b.", a: false, j: "Falso. Ejemplo: -5 < 2, pero (-5)^2 = 25 > 4." },
+        { q: "El valor absoluto de la suma de dos números es siempre igual a la suma de sus valores absolutos.", a: false, j: "Falso. La igualdad es |a+b| ≤ |a|+|b|. Ej: |2 + (-2)| = 0, pero |2|+|-2|=4." },
+        { q: "La expresión √(a/b) es equivalente a a para cualquier número real.", a: false, j: "Falso. Es una afirmación sin sentido. √(a/b) no se simplifica a 'a'." },
+        { q: "Un número con infinitas cifras decimales no periódicas es necesariamente irracional.", a: true, j: "Correcto. Esa es la definición de número irracional." },
+
+        // MÓDULO 2: ÁLGEBRA Y POLINOMIOS (desde x1.jpg)
+        { q: "Un binomio de la forma x^2 + k^2 siempre es un trinomio cuadrado perfecto.", a: false, j: "Falso. Un trinomio cuadrado perfecto tiene 3 términos. x^2 + k^2 es un binomio." },
+        { q: "Si un polinomio P(x) tiene grado 4 y Q(x) tiene grado 2, el grado de P(x) + Q(x) es siempre 4.", a: true, j: "Verdadero (siempre que no se cancele el término de grado 4). En general, el grado es el mayor de los grados." },
+        { q: "El desarrollo de (2x - 3)^5 es 4x^2 - 9.", a: false, j: "Falso. 4x^2 - 9 es (2x-3)(2x+3). (2x-3)^2 sería 4x^2 -12x +9. Para la quinta potencia es mucho más complejo." },
+        { q: "Si el resto de dividir P(x) por (x + 5) es cero, entonces P(-5) = 0.", a: true, j: "Correcto. Es el Teorema del Resto: P(a) es el resto de dividir por (x - a). Aquí a = -5." },
+        { q: "Todo polinomio de grado impar posee al menos una raíz real.", a: true, j: "Correcto. Por el Teorema de los Valores Intermedios, como tiende a +∞ por un lado y -∞ por otro, debe cruzar el eje x." },
+        { q: "La expresión x^2 - 10x + 25 es el desarrollo de un cuadrado de binomio.", a: true, j: "Correcto. Es (x - 5)^2." },
+        { q: "Dos polinomios son iguales si y sólo si tienen las mismas raíces.", a: false, j: "Falso. También deben tener los mismos coeficientes. Por ejemplo, (x-1) y 2(x-1) tienen las mismas raíces pero no son iguales." },
+        { q: "Si multiplicamos un polinomio de grado m por uno de grado n, el resultado es de grado m + n.", a: true, j: "Correcto (siempre que los coeficientes principales no sean cero)." },
+        { q: "El coeficiente principal de un polinomio determina el comportamiento de la gráfica en los extremos.", a: true, j: "Correcto, junto con el grado. Por ejemplo, si es positivo y grado par, va a +∞ en ambos extremos." },
+        { q: "Un polinomio de grado 2 sin raíces reales no puede ser factorizado en el conjunto de los reales.", a: true, j: "Correcto. Su factorización sería con complejos. En reales queda como está." },
+        { q: "El teorema del resto sirve para hallar el cociente de una división de polinomios.", a: false, j: "Falso. El teorema del resto solo sirve para hallar el resto, no el cociente." },
+        { q: "La expresión (x^2 - 1)/(x + 1) es equivalente a x + 2 para todo valor de x real.", a: false, j: "Falso. (x^2 - 1)/(x + 1) = (x-1)(x+1)/(x+1) = x - 1, siempre que x ≠ -1." },
+
+        // MÓDULO 3: ECUACIONES E INECUACIONES (desde x1.jpg)
+        { q: "Una ecuación de segundo grado con discriminante Δ = -4 corta al eje x en dos puntos.", a: false, j: "Falso. Si Δ < 0, no tiene raíces reales, por lo tanto no corta el eje x." },
+        { q: "Si a > 0, entonces necesariamente a = 0 o b = 0.", a: false, j: "Falso. Esta afirmación no tiene sentido tal como está escrita." },
+        { q: "En una ecuación de la forma x^2 = a, si a es un número positivo, la ecuación tiene dos soluciones reales que son opuestas entre sí.", a: true, j: "Correcto. Las soluciones son √a y -√a." },
+        { q: "Al elevar ambos miembros de una ecuación al cuadrado, se pueden generar soluciones 'extrañas' o falsas.", a: true, j: "Correcto. Por eso siempre hay que verificar las soluciones en la ecuación original." },
+        { q: "Dos ecuaciones son equivalentes si tienen el mismo conjunto de solución.", a: true, j: "Correcto. Esa es la definición de ecuaciones equivalentes." },
+        { q: "Una ecuación lineal siempre tiene exactamente una solución única en el conjunto de los números reales.", a: false, j: "Falso. Ej: 0x = 5 (sin solución) o 0x = 0 (infinitas soluciones)." },
+        { q: "La ecuación x^2 + 1 = 0 tiene dos soluciones en el conjunto de los números reales.", a: false, j: "Falso. En reales no tiene solución. Las soluciones son complejas: i y -i." },
+
+        // MÓDULO 4: FUNCIONES (desde x1.jpg y x2.jpg)
+        { q: "Si una recta tiene pendiente nula (m = 0), es paralela al eje de ordenadas.", a: false, j: "Falso. Pendiente nula significa recta horizontal, paralela al eje de abscisas (x)." }, // De x1.jpg (incompleta) y x2.jpg
+        { q: "Dos rectas son perpendiculares si el producto de sus pendientes es -1.", a: true, j: "Correcto (siempre que ninguna sea vertical/horizontal)." }, // De x2.jpg
+        { q: "La función cuadrática f(x) = ax^2 + c siempre interseca al eje y en (0, c).", a: true, j: "Correcto. Para x=0, f(0)=c." }, // De x2.jpg
+        { q: "El eje de simetría de una parábola siempre pasa por el punto medio entre sus raíces reales.", a: true, j: "Correcto. El eje de simetría es x = (x1 + x2)/2." }, // De x2.jpg
+        { q: "El dominio de cualquier función polinómica son todos los números reales.", a: true, j: "Correcto." }, // De x2.jpg
+        { q: "El logaritmo de una suma es igual a la suma de los logaritmos: log(A+B) = log A + log B.", a: false, j: "Falso. Esa propiedad es para el producto: log(AB) = log A + log B." }, // De x2.jpg
+        { q: "La función inversa de la exponencial es la función logarítmica.", a: true, j: "Correcto. Siempre que la base sea positiva y distinta de 1." }, // De x2.jpg
+        { q: "Si el vértice de una parábola está sobre el eje x, la ecuación cuadrática tiene una raíz doble.", a: true, j: "Correcto. El vértice en el eje x significa que el discriminante es cero." }, // De x2.jpg (texto suelto)
+        { q: "Cuando la base es una fracción (0 < base < 1), a medida que x aumenta, el resultado se hace cada vez más chico.", a: true, j: "Correcto. La función exponencial con base entre 0 y 1 es decreciente." }, // De x2.jpg (texto suelto adaptado)
+        { q: "Una función es creciente si, al aumentar x, el valor de f(x) disminuye.", a: false, j: "Falso. Esa es la definición de función decreciente." }, // De x2.jpg (texto suelto)
+        { q: "La parábola y = -2x^2 + 5 tiene un valor máximo absoluto.", a: true, j: "Correcto. Porque el coeficiente cuadrático es negativo, abre hacia abajo, teniendo un máximo en el vértice (0,5)." }, // De x2.jpg (texto suelto)
+
+        // MÓDULO 5: TRIGONOMETRÍA Y GEOMETRÍA (desde x2.jpg)
+        { q: "En un triángulo rectángulo, la hipotenusa es siempre el lado opuesto al ángulo recto.", a: true, j: "Correcto. Es el lado más largo." },
+        { q: "El seno de un ángulo agudo puede tomar valores mayores que 1.", a: false, j: "Falso. El seno de un ángulo agudo (0 a 90°) está entre 0 y 1." },
+        { q: "Si duplicamos el radio de un círculo, su área se duplica.", a: false, j: "Falso. El área es πr². Si el radio se duplica (2r), el área se cuadruplica: π(2r)² = 4πr²." },
+        { q: "En toda triángulo, la suma de los ángulos interiores es igual a dos ángulos rectos.", a: true, j: "Correcto. 180° = 2 * 90°." },
+        { q: "El Teorema de Pitágoras se cumple en triángulos obtusángulos si se ajusta el signo.", a: false, j: "Falso. El Teorema de Pitágoras solo es válido para triángulos rectángulos." },
+        { q: "La tangente de un ángulo de 45° es igual a 1.", a: true, j: "Correcto." },
+        { q: "Si los tres lados de un triángulo son proporcionales a los de otro, los triángulos son semejantes.", a: true, j: "Correcto. Es el criterio LLL de semejanza." },
+        { q: "El caso de un ángulo agudo se define como la razón entre el cateto opuesto y la hipotenusa.", a: true, j: "Correcto. Esa es la definición del seno." },
+        { q: "La diagonal de un cuadrado de lado L mide L·√2.", a: true, j: "Correcto, por Pitágoras." },
+        { q: "Si un triángulo tiene lados de 3, 4 y 6 cm, es un triángulo rectángulo.", a: false, j: "Falso. Para que sea rectángulo debe cumplir 3²+4² = 9+16=25, que es 5², no 6²." },
+        { q: "El perímetro de un sector circular depende únicamente del radio.", a: false, j: "Falso. Depende del radio y del ángulo." },
+
+        // MÓDULO 6: POTENCIACIÓN Y RADICACIÓN (desde x2.jpg)
+        { q: "La expresión (a·b)^n = a^n · b^n es válida para cualquier número real.", a: true, j: "Correcto. Es una propiedad de la potenciación." },
+        { q: "Un número negativo elevado a un exponente par da como resultado un número negativo.", a: false, j: "Falso. Da como resultado un número positivo. Ej: (-2)^2 = 4." },
+        { q: "a^(m/n) es equivalente a la raíz enésima de a elevada a la m.", a: true, j: "Correcto. a^(m/n) = ⁿ√(aᵐ)." },
+        { q: "La potencia de una potencia se resuelve sumando los exponentes.", a: false, j: "Falso. Se resuelve multiplicando los exponentes: (aᵐ)ⁿ = aᵐ·ⁿ." },
+        { q: "Todo número real distinto de cero elevado a la potencia cero es igual a 1.", a: true, j: "Correcto. a⁰ = 1, con a ≠ 0." }
     ];
 
     let state = {
         mode: '',
         questions: [],
         currentIndex: 0,
-        score: 0,
+        correctAnswers: 0,        // Nuevo: contador de respuestas correctas
+        incorrectAnswers: 0,      // Nuevo: contador de respuestas incorrectas
         results: []
     };
 
@@ -218,13 +262,17 @@
     }
 
     function setupGame(count) {
+        // Mezclar y tomar 'count' preguntas
         state.questions = [...questionsBank].sort(() => Math.random() - 0.5).slice(0, count);
         state.currentIndex = 0;
-        state.score = count;
+        state.correctAnswers = 0;
+        state.incorrectAnswers = 0;
         state.results = [];
 
+        // El puntaje inicial siempre es 0. Se calculará como correctas - (incorrectas * 0.5)
+        updateLiveScore();
+
         document.getElementById('total-q').innerText = count;
-        document.getElementById('live-score').innerText = state.score.toFixed(1);
         document.getElementById('score-container').style.display = (state.mode === 'iniciante') ? 'block' : 'none';
 
         showScreen('game-screen');
@@ -240,17 +288,38 @@
         document.getElementById('feedback-panel').style.display = 'none';
     }
 
+    // NUEVA FUNCIÓN: Calcula el puntaje según la fórmula correctas - (incorrectas * 0.5)
+    function calculateScore() {
+        return state.correctAnswers - (state.incorrectAnswers * 0.5);
+    }
+
+    // NUEVA FUNCIÓN: Actualiza el puntaje en la UI
+    function updateLiveScore() {
+        const liveScoreElement = document.getElementById('live-score');
+        if (liveScoreElement) {
+            liveScoreElement.innerText = calculateScore().toFixed(1);
+        }
+    }
+
     function handleAnswer(userAns) {
         const q = state.questions[state.currentIndex];
         const isCorrect = userAns === q.a;
         
-        if (!isCorrect) state.score -= 0.5;
+        // Actualizar contadores
+        if (isCorrect) {
+            state.correctAnswers++;
+        } else {
+            state.incorrectAnswers++;
+        }
         
         state.results.push({ q: q.q, user: userAns, correct: q.a, just: q.j, hit: isCorrect });
 
+        // Actualizar el puntaje en vivo (Modo Iniciante)
         if (state.mode === 'iniciante') {
+            updateLiveScore();
             showFeedback(isCorrect, q.j);
         } else {
+            // En modo serio, pasamos a la siguiente pregunta sin feedback
             nextQuestion();
         }
     }
@@ -262,7 +331,6 @@
         panel.className = 'feedback-area ' + (hit ? 'feedback-correct' : 'feedback-wrong');
         document.getElementById('feedback-title').innerText = hit ? '¡Excelente! ✨' : 'Ups... Corregimos 📚';
         document.getElementById('feedback-text').innerText = text;
-        document.getElementById('live-score').innerText = state.score.toFixed(1);
     }
 
     function nextQuestion() {
@@ -276,7 +344,9 @@
 
     function showFinalResults() {
         showScreen('results-screen');
-        const finalScore = state.score;
+        
+        // Calcular el puntaje final
+        const finalScore = calculateScore();
         const totalPossible = state.questions.length;
         const scoreDisplay = document.getElementById('final-score');
         const msgDisplay = document.getElementById('final-msg');
@@ -289,15 +359,16 @@
             if (finalScore >= 9) {
                 msgDisplay.innerText = "¡Aprobaste para pasar al examen práctico! 🏆";
                 msgDisplay.style.color = "var(--success-color)";
-                subtext.innerText = "Tenés una excelente base teórica.";
+                subtext.innerText = `Tenés una excelente base teórica. Puntaje final: ${finalScore.toFixed(1)}.`;
             } else {
                 msgDisplay.innerText = "Tenés que seguir practicando... 📚";
                 msgDisplay.style.color = "var(--error-color)";
-                subtext.innerText = "Probá con el modo inicial para reforzar conceptos.";
+                subtext.innerText = `Puntaje final: ${finalScore.toFixed(1)}. Probá con el modo inicial para reforzar conceptos.`;
             }
         } else {
             msgDisplay.innerText = "¡Entrenamiento Finalizado!";
-            subtext.innerText = `Lograste ${finalScore.toFixed(1)} puntos de ${totalPossible}.`;
+            msgDisplay.style.color = "var(--secondary-color)";
+            subtext.innerText = `Lograste ${finalScore.toFixed(1)} puntos de ${totalPossible} (${state.correctAnswers} correctas - ${state.incorrectAnswers * 0.5} por errores).`;
         }
 
         // Generar revisión
