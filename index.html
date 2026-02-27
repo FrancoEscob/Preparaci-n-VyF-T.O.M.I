@@ -71,6 +71,9 @@
         .review-item { padding: 15px; border-bottom: 1px solid #eee; margin-bottom: 10px; border-radius: 8px; }
         .review-item.wrong { border-left: 4px solid var(--error-color); background: #fffcfc; }
         .review-item.correct { border-left: 4px solid var(--success-color); background: #fcfdfc; }
+        .btn-ai { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 7px 14px; background: #1a1a2e; color: #e0e0ff; border: none; border-radius: 8px; font-family: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .btn-ai:hover { background: #16213e; transform: scale(1.03); }
+        .btn-ai svg { flex-shrink: 0; }
 
         /* Historial */
         .history-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: var(--secondary-color); color: white; border: none; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: 0.2s; }
@@ -617,10 +620,20 @@
         state.results.forEach(r => {
             const item = document.createElement('div');
             item.className = `review-item ${r.hit ? 'correct' : 'wrong'}`;
+
+            // Quitar LaTeX delimiters para el prompt de texto plano
+            const plainQ = r.q.replace(/\\\(|\\\)/g, '').replace(/\\\[|\\\]/g, '').trim();
+            const promptText = `Soy estudiante universitario preparando un examen de matemática. Explicame completamente el siguiente ejercicio de Verdadero o Falso. La respuesta correcta es "${r.correct ? 'VERDADERO' : 'FALSO'}". Quiero entender el concepto matemático detrás, ver un desarrollo paso a paso y si es posible un ejemplo adicional.\n\nEjercicio: ${plainQ}`;
+            const perplexityUrl = 'https://www.perplexity.ai/search?q=' + encodeURIComponent(promptText);
+
             item.innerHTML = `
                 <p><strong>Pregunta:</strong> ${r.q}</p>
                 <p>Tu respuesta: <b>${r.user ? 'V' : 'F'}</b> | Correcta: <b>${r.correct ? 'V' : 'F'}</b></p>
                 <p style="font-size: 0.85rem; margin-top:5px;"><em>${r.just}</em></p>
+                ${!r.hit ? `<a class="btn-ai" href="${perplexityUrl}" target="_blank" rel="noopener">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                    Preguntar IA
+                </a>` : ''}
             `;
             container.appendChild(item);
             renderLatex(item);
