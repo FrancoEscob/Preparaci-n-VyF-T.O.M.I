@@ -621,9 +621,19 @@
             const item = document.createElement('div');
             item.className = `review-item ${r.hit ? 'correct' : 'wrong'}`;
 
-            // Quitar LaTeX delimiters para el prompt de texto plano
-            const plainQ = r.q.replace(/\\\(|\\\)/g, '').replace(/\\\[|\\\]/g, '').trim();
-            const promptText = `Soy estudiante universitario preparando un examen de matemática. Explicame completamente el siguiente ejercicio de Verdadero o Falso. La respuesta correcta es "${r.correct ? 'VERDADERO' : 'FALSO'}". Quiero entender el concepto matemático detrás, ver un desarrollo paso a paso y si es posible un ejemplo adicional.\n\nEjercicio: ${plainQ}`;
+            // Limpiar LaTeX para texto plano
+            const plainQ = r.q
+                .replace(/\\\(|\\\)/g, '')
+                .replace(/\\\[|\\\]/g, '')
+                .replace(/\\[a-zA-Z]+/g, '')  // quita \sqrt, \frac, \mathbb, etc.
+                .replace(/[{}]/g, '')          // quita llaves de LaTeX
+                .replace(/\s+/g, ' ')
+                .trim();
+            const promptText = 'Soy estudiante universitario preparando un examen de matemática (TOMI). '
+                + 'Explicame completamente el siguiente ejercicio de Verdadero o Falso. '
+                + 'La respuesta correcta es ' + (r.correct ? 'VERDADERO' : 'FALSO') + '. '
+                + 'Quiero entender el concepto matemático detrás, ver el desarrollo paso a paso y un ejemplo adicional. '
+                + 'El ejercicio es: ' + plainQ;
             const perplexityUrl = 'https://www.perplexity.ai/search?q=' + encodeURIComponent(promptText);
 
             item.innerHTML = `
