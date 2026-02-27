@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preparación V y F para T.O.M.I - Verdadero o Falso</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>
         :root {
             --bg-color: #f0f4f8;
@@ -22,7 +25,7 @@
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; }
 
         .app-container { max-width: 900px; margin: 40px auto; padding: 20px; }
-        
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.4s ease forwards; }
 
@@ -44,6 +47,8 @@
         .btn-v { background: var(--success-color); color: white; flex: 1; font-size: 1.2rem; padding: 20px; }
         .btn-f { background: var(--error-color); color: white; flex: 1; font-size: 1.2rem; padding: 20px; }
         .btn-back { background: transparent; color: #7f8c8d; border: 1px solid #ddd; margin-bottom: 20px; }
+        .btn-warning { background: var(--warning-color); color: white; }
+        .btn-danger { background: var(--error-color); color: white; font-size: 0.85rem; padding: 8px 16px; }
         .btn:hover { opacity: 0.9; transform: scale(1.02); }
 
         .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: #f8f9fa; padding: 15px 25px; border-radius: 12px; }
@@ -51,7 +56,8 @@
         .stat-label { font-size: 0.75rem; text-transform: uppercase; color: #95a5a6; }
         .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--secondary-color); }
 
-        .question-box { margin: 30px 0; min-height: 120px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.4rem; font-weight: 500; color: var(--secondary-color); border-left: 5px solid var(--primary-color); padding-left: 20px; }
+        .question-box { margin: 30px 0; min-height: 120px; text-align: center; font-size: 1.3rem; font-weight: 500; color: var(--secondary-color); border-left: 5px solid var(--primary-color); padding: 20px; display: flex; align-items: center; }
+        .question-box .q-inner { display: inline; text-align: center; width: 100%; line-height: 2; }
 
         .button-group { display: flex; gap: 20px; }
 
@@ -66,16 +72,74 @@
         .review-item.wrong { border-left: 4px solid var(--error-color); background: #fffcfc; }
         .review-item.correct { border-left: 4px solid var(--success-color); background: #fcfdfc; }
 
+        /* Historial */
+        .history-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: var(--secondary-color); color: white; border: none; padding: 10px 18px; border-radius: 12px; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: 0.2s; }
+        .history-btn:hover { transform: scale(1.05); }
+
+        .history-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
+        .history-overlay.open { display: flex; }
+        .history-modal { background: white; border-radius: 20px; padding: 35px; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .history-modal h2 { margin-bottom: 5px; color: var(--secondary-color); }
+        .history-modal .history-subtitle { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 20px; }
+
+        .history-entry { padding: 15px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .history-entry .h-info { flex: 1; }
+        .history-entry .h-date { font-size: 0.8rem; color: #95a5a6; }
+        .history-entry .h-mode { font-weight: 600; color: var(--secondary-color); }
+        .history-entry .h-detail { font-size: 0.85rem; color: #666; margin-top: 2px; }
+        .history-entry .h-score { font-size: 1.6rem; font-weight: 800; min-width: 70px; text-align: center; }
+        .history-entry .h-score.good { color: var(--success-color); }
+        .history-entry .h-score.bad { color: var(--error-color); }
+        .history-entry .h-score.mid { color: var(--warning-color); }
+
+        .history-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .h-stat-card { background: #f8f9fa; padding: 15px; border-radius: 12px; text-align: center; }
+        .h-stat-card .h-stat-val { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); }
+        .h-stat-card .h-stat-lbl { font-size: 0.75rem; color: #95a5a6; text-transform: uppercase; }
+
+        .trend-indicator { font-size: 0.85rem; margin-top: 3px; }
+        .trend-up { color: var(--success-color); }
+        .trend-down { color: var(--error-color); }
+        .trend-same { color: #95a5a6; }
+
+        .empty-history { text-align: center; padding: 40px; color: #95a5a6; }
+
+        .history-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+
+        /* Espaciado para expresiones LaTeX inline */
+        .katex { margin: 0 0.2em; display: inline !important; }
+        .katex-display { display: inline !important; margin: 0 !important; }
+        .katex-html { display: inline !important; }
+        .question-box .katex { font-size: 1em; }
+        .feedback-area .katex { font-size: 0.95em; }
+        .review-item .katex { font-size: 0.9em; }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
         @media (max-width: 600px) {
             .menu-grid { grid-template-columns: 1fr; }
             h1 { font-size: 1.8rem; }
+            .history-stats { grid-template-columns: 1fr; }
+            .history-btn { top: 10px; right: 10px; padding: 8px 14px; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
+
+<button class="history-btn" onclick="toggleHistory()">Historial</button>
+
+<div class="history-overlay" id="history-overlay" onclick="closeHistoryOutside(event)">
+    <div class="history-modal" id="history-modal">
+        <h2>Tu Historial</h2>
+        <p class="history-subtitle">Seguimiento de tu progreso a lo largo del tiempo</p>
+        <div id="history-content"></div>
+        <div class="history-actions">
+            <button class="btn btn-primary" onclick="toggleHistory()">Cerrar</button>
+            <button class="btn btn-danger" onclick="clearHistory()" id="clear-history-btn" style="display:none;">Borrar historial</button>
+        </div>
+    </div>
+</div>
 
 <div class="app-container">
     <header>
@@ -86,15 +150,15 @@
     <div id="home-screen" class="screen active fade-in">
         <div class="menu-grid">
             <div class="mode-card" onclick="openOptions('iniciante')">
-                <h3>🟢 Modo Iniciante</h3>
+                <h3>Modo Iniciante</h3>
                 <p>Elige rondas (16 c/u). Puntaje visible y justificación inmediata para aprender de cada error.</p>
             </div>
             <div class="mode-card" onclick="startSerio()">
-                <h3>🔴 Modo Serio</h3>
+                <h3>Modo Serio</h3>
                 <p>16 preguntas aleatorias sin ayuda. Los resultados y justificaciones se muestran solo al final.</p>
             </div>
         </div>
-        
+
         <div id="iniciante-options" style="display:none; margin-top:30px; text-align:center;" class="fade-in">
             <h4 style="margin-bottom:15px;">Selecciona duración:</h4>
             <button class="btn btn-primary" onclick="startIniciante(1)" style="margin:5px;">1 Ronda (16 Preg.)</button>
@@ -105,7 +169,7 @@
 
     <div id="game-screen" class="screen fade-in">
         <button class="btn btn-back" onclick="goToMain()">← Salir al Menú</button>
-        
+
         <div class="game-header">
             <div class="stat-box">
                 <div class="stat-label">Pregunta</div>
@@ -118,7 +182,7 @@
         </div>
 
         <div class="question-box" id="question-text">
-            Cargando pregunta...
+            <span class="q-inner">Cargando pregunta...</span>
         </div>
 
         <div class="button-group" id="action-buttons">
@@ -140,8 +204,7 @@
             <p id="final-subtext"></p>
         </div>
 
-        <div class="review-list" id="review-container">
-            </div>
+        <div class="review-list" id="review-container"></div>
 
         <button class="btn btn-primary" onclick="goToMain()" style="width:100%; margin-top:30px; padding:20px;">Volver a Intentar</button>
     </div>
@@ -150,98 +213,144 @@
 <script>
     // ==================== BANCO DE PREGUNTAS DEFINITIVO ====================
     const questionsBank = [
-        // === MÓDULO 1: CONJUNTOS NUMÉRICOS ===
-        { q: "La suma de un número racional y un número irracional es siempre un número irracional.", a: true, j: "Correcto. La suma de un racional y un irracional siempre da irracional." },
-        { q: "El conjunto de los números reales es la unión de los racionales y los irracionales.", a: true, j: "Correcto. Los reales se dividen en racionales e irracionales." },
-        { q: "Entre dos números racionales distintos, siempre existe al menos un número irracional.", a: true, j: "Correcto. Los racionales son densos, pero también hay infinitos irracionales entre ellos." },
-        { q: "Todo número decimal periódico puede expresarse como una fracción de números enteros.", a: true, j: "Correcto. Esa es la definición de número racional." },
-        { q: "El producto de dos números irracionales puede resultar en un número racional.", a: true, j: "Ejemplo: √2 * √2 = 2 (racional)." },
-        { q: "La raíz cuadrada de cualquier número natural es un número irracional.", a: false, j: "Falso. Por ejemplo, √4 = 2 que es entero (racional)." },
-        { q: "El número √3 es un número irracional porque tiene infinitas cifras decimales.", a: false, j: "Falso. Tener infinitas cifras no es suficiente. La clave es que sean no periódicas." },
-        { q: "El conjunto de los números enteros (Z) es denso.", a: false, j: "Falso. Entre 2 y 3 no hay ningún entero." },
-        { q: "Si a < b, entonces a^2 < b^2 para cualquier par de números reales a, b.", a: false, j: "Falso. Ejemplo: -5 < 2, pero (-5)^2 = 25 > 4." },
-        { q: "El valor absoluto de la suma de dos números es siempre igual a la suma de sus valores absolutos.", a: false, j: "Falso. La igualdad es |a+b| ≤ |a|+|b|." },
-        { q: "Un número con infinitas cifras decimales no periódicas es necesariamente irracional.", a: true, j: "Correcto. Esa es la definición de número irracional." },
+        // =====================================================================
+        // === MÓDULO 1: CONJUNTOS NUMÉRICOS (21 preguntas) ===
+        // =====================================================================
+        { q: "La suma de un número racional y un número irracional es siempre un número irracional.", a: true, j: "Verdadero. Si \\(r\\) es racional e \\(i\\) es irracional, supongamos que \\(r + i = s\\) fuera racional. Entonces \\(i = s - r\\), que sería resta de racionales (racional), lo cual contradice que \\(i\\) es irracional. Por lo tanto, \\(r + i\\) siempre es irracional." },
+        { q: "El conjunto de los números reales es la unión de los racionales y los irracionales.", a: true, j: "Verdadero. Por definición, \\(\\mathbb{R} = \\mathbb{Q} \\cup (\\mathbb{R} \\setminus \\mathbb{Q})\\). Todo número real es o bien racional (expresable como \\(\\frac{p}{q}\\) con \\(q \\neq 0\\)) o bien irracional (no expresable así). No hay una tercera categoría." },
+        { q: "Entre dos números racionales distintos, siempre existe al menos un número irracional.", a: true, j: "Verdadero. Dados \\(a, b \\in \\mathbb{Q}\\) con \\(a < b\\), siempre podemos encontrar un irracional entre ellos, por ejemplo \\(a + \\frac{(b-a)}{\\sqrt{2}} \\cdot \\frac{1}{2}\\). Esto se debe a la densidad de los irracionales en \\(\\mathbb{R}\\)." },
+        { q: "Todo número decimal periódico puede expresarse como una fracción de números enteros.", a: true, j: "Verdadero. Un decimal periódico como \\(0.\\overline{3}\\) se convierte en fracción así: sea \\(x = 0.333...\\), entonces \\(10x = 3.333...\\), restando: \\(9x = 3\\), luego \\(x = \\frac{1}{3}\\). Este método funciona con cualquier decimal periódico." },
+        { q: "El producto de dos números irracionales puede resultar en un número racional.", a: true, j: "Verdadero. Ejemplo clásico: \\(\\sqrt{2} \\times \\sqrt{2} = 2\\), que es racional. Otro ejemplo: \\(\\sqrt{3} \\times \\sqrt{12} = \\sqrt{36} = 6\\). El producto de irracionales no tiene por qué ser irracional." },
+        { q: "La raíz cuadrada de cualquier número natural es un número irracional.", a: false, j: "Falso. Los cuadrados perfectos tienen raíz racional: \\(\\sqrt{4} = 2\\), \\(\\sqrt{9} = 3\\), \\(\\sqrt{16} = 4\\). Solo los naturales que no son cuadrados perfectos (como 2, 3, 5, 6...) tienen raíz irracional." },
+        { q: "El número \\(\\sqrt{3}\\) es un número irracional porque tiene infinitas cifras decimales.", a: false, j: "Falso. Tener infinitas cifras decimales no es suficiente para ser irracional. Por ejemplo, \\(\\frac{1}{3} = 0.333...\\) tiene infinitas cifras pero es racional. La clave es que \\(\\sqrt{3}\\) es irracional porque sus decimales son infinitos y NO periódicos." },
+        { q: "El conjunto de los números enteros \\(\\mathbb{Z}\\) es denso.", a: false, j: "Falso. Un conjunto es denso si entre cualquier par de elementos distintos existe otro elemento del conjunto. Entre los enteros 2 y 3 no hay ningún otro entero, por lo tanto \\(\\mathbb{Z}\\) no es denso. En cambio, \\(\\mathbb{Q}\\) sí es denso." },
+        { q: "Si \\(a < b\\), entonces \\(a^2 < b^2\\) para cualquier par de números reales.", a: false, j: "Falso. Contraejemplo: \\(-5 < 2\\), pero \\((-5)^2 = 25 > 4 = 2^2\\). Esta propiedad solo vale si ambos números son no negativos (\\(0 \\leq a < b \\Rightarrow a^2 < b^2\\))." },
+        { q: "El valor absoluto de la suma de dos números es siempre igual a la suma de sus valores absolutos.", a: false, j: "Falso. Lo correcto es la desigualdad triangular: \\(|a + b| \\leq |a| + |b|\\). Contraejemplo: con \\(a = 3\\) y \\(b = -5\\): \\(|3 + (-5)| = |-2| = 2\\), pero \\(|3| + |-5| = 8\\). La igualdad solo se da cuando \\(a\\) y \\(b\\) tienen el mismo signo." },
+        { q: "Un número con infinitas cifras decimales no periódicas es necesariamente irracional.", a: true, j: "Verdadero. Por definición, un número es racional si y solo si su expansión decimal es finita o infinita periódica. Por lo tanto, si un número tiene infinitas cifras decimales sin patrón periódico, entonces es irracional (como \\(\\pi\\), \\(e\\), \\(\\sqrt{2}\\))." },
+        { q: "El número \\(\\frac{5}{13}\\) tiene una expresión decimal infinita no periódica.", a: false, j: "Falso. \\(\\frac{5}{13}\\) es un número racional (cociente de enteros con denominador no nulo), por lo tanto su expresión decimal es infinita pero periódica: \\(0.\\overline{384615}\\). Solo los irracionales tienen decimales infinitos no periódicos." },
+        { q: "El número \\(\\frac{7}{13}\\) tiene una expresión decimal infinita no periódica.", a: false, j: "Falso. Al ser \\(\\frac{7}{13}\\) una fracción de enteros, es racional. Su expresión decimal es \\(0.\\overline{538461}\\), que es periódica. Un número racional jamás puede tener expansión decimal no periódica." },
+        { q: "Si multiplicamos dos números irracionales, el resultado siempre es irracional.", a: false, j: "Falso. Contraejemplo: \\(\\sqrt{2} \\times \\sqrt{2} = 2\\), que es racional. Otro: \\(\\sqrt{5} \\times \\sqrt{5} = 5\\). El producto de irracionales puede ser racional o irracional, depende de los números elegidos." },
+        { q: "Todo número entero es también un número racional.", a: true, j: "Verdadero. Todo entero \\(n\\) puede escribirse como \\(\\frac{n}{1}\\), que es una fracción de enteros. Por lo tanto \\(\\mathbb{Z} \\subset \\mathbb{Q}\\). La cadena de inclusiones es: \\(\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}\\)." },
+        { q: "La suma de dos números irracionales es siempre irracional.", a: false, j: "Falso. Contraejemplo: \\(\\sqrt{2} + (-\\sqrt{2}) = 0\\), que es racional. Otro: \\((3 + \\sqrt{5}) + (3 - \\sqrt{5}) = 6\\). La suma de irracionales puede dar un resultado racional si los términos irracionales se cancelan." },
+        { q: "El número \\(\\pi\\) es irracional porque no se puede expresar como fracción de enteros.", a: true, j: "Verdadero. \\(\\pi = 3.14159265...\\) tiene infinitas cifras decimales sin patrón periódico. Fue demostrado por Lambert en 1761 que \\(\\pi\\) no puede expresarse como \\(\\frac{p}{q}\\) con \\(p, q \\in \\mathbb{Z}\\)." },
+        { q: "Entre dos números irracionales siempre existe un número racional.", a: true, j: "Verdadero. Los racionales son densos en los reales. Dados dos irracionales \\(a < b\\), la densidad de \\(\\mathbb{Q}\\) en \\(\\mathbb{R}\\) garantiza que existe \\(r \\in \\mathbb{Q}\\) tal que \\(a < r < b\\)." },
+        { q: "El número \\(0.\\overline{9} = 0.999...\\) es estrictamente menor que 1.", a: false, j: "Falso. \\(0.\\overline{9} = 1\\) exactamente. Demostración: sea \\(x = 0.999...\\), entonces \\(10x = 9.999...\\), restando: \\(9x = 9\\), luego \\(x = 1\\). No hay diferencia entre ambos números." },
+        { q: "La intersección entre el conjunto de los racionales y los irracionales es vacía.", a: true, j: "Verdadero. \\(\\mathbb{Q} \\cap (\\mathbb{R} \\setminus \\mathbb{Q}) = \\emptyset\\). Un número no puede ser racional e irracional al mismo tiempo: o se puede expresar como fracción de enteros, o no se puede. Son categorías mutuamente excluyentes." },
+        { q: "El número \\(\\sqrt[3]{8}\\) es irracional.", a: false, j: "Falso. \\(\\sqrt[3]{8} = 2\\), que es un número entero (y por lo tanto racional). La raíz cúbica de un cubo perfecto siempre es un entero." },
 
-        // === MÓDULO 2: ÁLGEBRA Y POLINOMIOS ===
-        { q: "Un binomio de la forma x^2 + k^2 siempre es un trinomio cuadrado perfecto.", a: false, j: "Falso. Un trinomio tiene 3 términos." },
-        { q: "Si un polinomio P(x) tiene grado 4 y Q(x) tiene grado 2, el grado de P(x) + Q(x) es siempre 4.", a: true, j: "Verdadero (si no se cancela el término de grado 4)." },
-        { q: "El desarrollo de (2x - 3)^2 es 4x^2 - 9.", a: false, j: "Falso. (2x-3)^2 = 4x^2 -12x +9." },
-        { q: "Si el resto de dividir P(x) por (x + 5) es cero, entonces P(-5) = 0.", a: true, j: "Correcto. Es el Teorema del Resto." },
-        { q: "Todo polinomio de grado impar posee al menos una raíz real.", a: true, j: "Correcto. Por el Teorema de los Valores Intermedios." },
-        { q: "La expresión x^2 - 10x + 25 es el desarrollo de un cuadrado de binomio.", a: true, j: "Correcto. Es (x - 5)^2." },
-        { q: "Dos polinomios son iguales si y sólo si tienen las mismas raíces.", a: false, j: "Falso. También deben tener los mismos coeficientes." },
-        { q: "Si multiplicamos un polinomio de grado m por uno de grado n, el resultado es de grado m + n.", a: true, j: "Correcto." },
-        { q: "El coeficiente principal de un polinomio determina el comportamiento de la gráfica en los extremos.", a: true, j: "Correcto." },
-        { q: "Un polinomio de grado 2 sin raíces reales no puede ser factorizado en el conjunto de los reales.", a: true, j: "Correcto." },
-        { q: "El teorema del resto sirve para hallar el cociente de una división de polinomios.", a: false, j: "Falso. Solo sirve para hallar el resto." },
-        { q: "La expresión (x^2 - 1)/(x + 1) es equivalente a x - 1 para todo x real.", a: false, j: "Falso. Es equivalente para x ≠ -1." },
+        // =====================================================================
+        // === MÓDULO 2: ÁLGEBRA Y POLINOMIOS (22 preguntas) ===
+        // =====================================================================
+        { q: "Un binomio de la forma \\(x^2 + k^2\\) siempre es un trinomio cuadrado perfecto.", a: false, j: "Falso. Un trinomio cuadrado perfecto tiene tres términos: \\(a^2 + 2ab + b^2\\). La expresión \\(x^2 + k^2\\) es un binomio (dos términos) y le falta el término medio \\(2xk\\). Además, \\(x^2 + k^2\\) no se puede factorizar en los reales." },
+        { q: "Si \\(P(x)\\) tiene grado 4 y \\(Q(x)\\) tiene grado 2, el grado de \\(P(x) + Q(x)\\) es siempre 4.", a: true, j: "Verdadero. Al sumar polinomios, el grado del resultado es el mayor de los dos grados, salvo que los términos líderes se cancelen. Como grado 4 > grado 2, los coeficientes principales no pueden cancelarse, así que el grado siempre es 4." },
+        { q: "El desarrollo de \\((2x - 3)^2\\) es \\(4x^2 - 9\\).", a: false, j: "Falso. Se debe aplicar \\((a - b)^2 = a^2 - 2ab + b^2\\): \\((2x - 3)^2 = (2x)^2 - 2(2x)(3) + 3^2 = 4x^2 - 12x + 9\\). La expresión \\(4x^2 - 9\\) corresponde a la diferencia de cuadrados \\((2x-3)(2x+3)\\)." },
+        { q: "Si el resto de dividir \\(P(x)\\) por \\((x + 5)\\) es cero, entonces \\(P(-5) = 0\\).", a: true, j: "Verdadero. Es el Teorema del Resto: el resto de dividir \\(P(x)\\) por \\((x - c)\\) es \\(P(c)\\). Aquí \\((x + 5) = (x - (-5))\\), entonces el resto es \\(P(-5)\\). Si el resto es cero, \\(P(-5) = 0\\) y \\(-5\\) es raíz de \\(P\\)." },
+        { q: "Todo polinomio de grado impar posee al menos una raíz real.", a: true, j: "Verdadero. Por el Teorema de los Valores Intermedios (Bolzano): un polinomio de grado impar tiende a \\(+\\infty\\) en un extremo y a \\(-\\infty\\) en el otro, por lo que necesariamente cruza el eje \\(x\\) al menos una vez." },
+        { q: "La expresión \\(x^2 - 10x + 25\\) es el desarrollo de un cuadrado de binomio.", a: true, j: "Verdadero. Se puede verificar: \\((x - 5)^2 = x^2 - 2(5)(x) + 5^2 = x^2 - 10x + 25\\). Cumple la forma \\(a^2 - 2ab + b^2 = (a-b)^2\\) con \\(a = x\\) y \\(b = 5\\)." },
+        { q: "Dos polinomios son iguales si y sólo si tienen las mismas raíces.", a: false, j: "Falso. Las mismas raíces no implican el mismo polinomio. Ejemplo: \\(P(x) = x^2 - 1\\) y \\(Q(x) = 2x^2 - 2\\) tienen las mismas raíces (\\(\\pm 1\\)), pero son polinomios distintos. Dos polinomios son iguales si todos sus coeficientes correspondientes son iguales." },
+        { q: "Si multiplicamos un polinomio de grado \\(m\\) por uno de grado \\(n\\), el resultado es de grado \\(m + n\\).", a: true, j: "Verdadero. Al multiplicar, el término de mayor grado resulta de multiplicar los términos líderes: \\(a_m x^m \\cdot b_n x^n = a_m b_n x^{m+n}\\). Como \\(a_m \\neq 0\\) y \\(b_n \\neq 0\\), el coeficiente líder no es cero." },
+        { q: "El coeficiente principal de un polinomio determina el comportamiento de la gráfica en los extremos.", a: true, j: "Verdadero. Si el coeficiente principal es positivo y el grado es par, la gráfica va a \\(+\\infty\\) en ambos extremos. Si es negativo y grado par, va a \\(-\\infty\\) en ambos. Con grado impar, el signo del coeficiente principal determina si sube a la derecha o a la izquierda." },
+        { q: "Un polinomio de grado 2 sin raíces reales no puede ser factorizado en el conjunto de los reales.", a: true, j: "Verdadero. Si \\(ax^2 + bx + c\\) tiene discriminante \\(\\Delta = b^2 - 4ac < 0\\), no tiene raíces reales y no puede escribirse como producto de dos factores lineales reales. Solo se puede factorizar usando números complejos." },
+        { q: "El teorema del resto sirve para hallar el cociente de una división de polinomios.", a: false, j: "Falso. El Teorema del Resto establece que el resto de dividir \\(P(x)\\) por \\((x - c)\\) es \\(P(c)\\). Solo da el resto, no el cociente. Para hallar el cociente se usa división sintética (Ruffini) o el algoritmo de división de polinomios." },
+        { q: "La expresión \\(\\frac{x^2 - 1}{x + 1}\\) es equivalente a \\(x - 1\\) para todo \\(x\\) real.", a: false, j: "Falso. \\(\\frac{x^2 - 1}{x + 1} = \\frac{(x-1)(x+1)}{x+1} = x - 1\\), pero solo cuando \\(x \\neq -1\\). En \\(x = -1\\) la expresión original no está definida (división por cero), mientras que \\(x - 1\\) sí lo está. El dominio es distinto." },
+        { q: "Si \\(P(x)\\) es grado 2 y \\(Q(x)\\) es grado 3, entonces \\(P(x) \\cdot Q(x)\\) es grado 5.", a: true, j: "Verdadero. El grado del producto de dos polinomios es la suma de sus grados: \\(\\text{gr}(P \\cdot Q) = \\text{gr}(P) + \\text{gr}(Q) = 2 + 3 = 5\\)." },
+        { q: "El polinomio \\(Q(x) = x^4 - 8x^2 + 16\\) es un trinomio cuadrado perfecto.", a: true, j: "Verdadero. Haciendo la sustitución \\(u = x^2\\), queda \\(u^2 - 8u + 16 = (u - 4)^2 = (x^2 - 4)^2\\). Se verifica: \\((x^2 - 4)^2 = x^4 - 8x^2 + 16\\). Cumple la forma \\(a^2 - 2ab + b^2\\)." },
+        { q: "El polinomio \\(q(x) = x^4 - 10x^2 - 25\\) es un trinomio cuadrado perfecto.", a: false, j: "Falso. Para ser TCP, debería ser \\(x^4 - 10x^2 + 25 = (x^2 - 5)^2\\). El signo del término independiente está cambiado: es \\(-25\\) en lugar de \\(+25\\), y el término del medio debería tener signo opuesto al \\(-10x^2\\) que corresponde a \\(-2(x^2)(5)\\). No cumple la forma \\((a-b)^2\\)." },
+        { q: "Si un polinomio \\(H(x)\\) tiene una raíz racional, entonces esa raíz debe ser un número entero.", a: false, j: "Falso. Contraejemplo: \\(2x - 1 = 0\\) tiene raíz \\(x = \\frac{1}{2}\\), que es racional pero no entero. El Teorema de la Raíz Racional dice que las posibles raíces racionales \\(\\frac{p}{q}\\) dependen de los divisores del término independiente y del coeficiente principal." },
+        { q: "La forma factorizada de \\(g(x) = 3x^2 + 3x - 6\\) es \\(3(x - 2)(x + 1)\\).", a: false, j: "Falso. Factorizando: \\(3x^2 + 3x - 6 = 3(x^2 + x - 2)\\). Para factorizar \\(x^2 + x - 2\\), buscamos dos números que multiplicados den \\(-2\\) y sumados den \\(1\\): son \\(2\\) y \\(-1\\). Entonces: \\(3(x + 2)(x - 1)\\), no \\(3(x - 2)(x + 1)\\)." },
+        { q: "El grado de un polinomio constante no nulo (como \\(P(x) = 5\\)) es 0.", a: true, j: "Verdadero. Un polinomio constante \\(P(x) = c\\) con \\(c \\neq 0\\) equivale a \\(c \\cdot x^0\\), por lo que su grado es 0. Nota: el polinomio nulo (\\(P(x) = 0\\)) no tiene grado definido." },
+        { q: "La suma de las raíces de \\(ax^2 + bx + c = 0\\) es \\(\\frac{b}{a}\\).", a: false, j: "Falso. Por las relaciones de Vieta, si \\(r_1\\) y \\(r_2\\) son las raíces, entonces \\(r_1 + r_2 = -\\frac{b}{a}\\) (con signo negativo). El producto es \\(r_1 \\cdot r_2 = \\frac{c}{a}\\). El signo negativo es clave." },
+        { q: "La diferencia de cuadrados \\(a^2 - b^2\\) se factoriza como \\((a - b)(a + b)\\).", a: true, j: "Verdadero. Es una identidad algebraica fundamental. Se verifica multiplicando: \\((a-b)(a+b) = a^2 + ab - ab - b^2 = a^2 - b^2\\). Ejemplo: \\(x^2 - 9 = (x-3)(x+3)\\)." },
+        { q: "Si \\(P(2) = 0\\), entonces \\((x - 2)\\) es un factor de \\(P(x)\\).", a: true, j: "Verdadero. Es el Teorema del Factor: si \\(P(c) = 0\\), entonces \\((x - c)\\) divide a \\(P(x)\\) sin resto. Es la recíproca del Teorema del Resto. Si \\(P(2) = 0\\), podemos escribir \\(P(x) = (x-2) \\cdot Q(x)\\)." },
+        { q: "Al dividir un polinomio de grado \\(n\\) por uno de grado \\(d\\) (con \\(n \\geq d\\)), el cociente tiene grado \\(n - d\\).", a: true, j: "Verdadero. Por el algoritmo de división de polinomios: \\(P(x) = D(x) \\cdot Q(x) + R(x)\\), donde \\(\\text{gr}(Q) = \\text{gr}(P) - \\text{gr}(D) = n - d\\) y \\(\\text{gr}(R) < \\text{gr}(D)\\)." },
 
-        // === MÓDULO 3: ECUACIONES ===
-        { q: "Una ecuación de segundo grado con discriminante Δ = -4 corta al eje x en dos puntos.", a: false, j: "Falso. Si Δ < 0, no corta el eje x." },
-        { q: "En una ecuación de la forma x^2 = a, si a es positivo, la ecuación tiene dos soluciones reales opuestas.", a: true, j: "Correcto. Soluciones: √a y -√a." },
-        { q: "Al elevar ambos miembros de una ecuación al cuadrado, se pueden generar soluciones extrañas.", a: true, j: "Correcto. Hay que verificar." },
-        { q: "Dos ecuaciones son equivalentes si tienen el mismo conjunto de solución.", a: true, j: "Correcto." },
-        { q: "Una ecuación lineal siempre tiene exactamente una solución única en los reales.", a: false, j: "Falso. Puede no tener solución o infinitas." },
-        { q: "La ecuación x^2 + 1 = 0 tiene dos soluciones en los números reales.", a: false, j: "Falso. No tiene solución real." },
+        // =====================================================================
+        // === MÓDULO 3: ECUACIONES (16 preguntas) ===
+        // =====================================================================
+        { q: "Una ecuación de segundo grado con discriminante \\(\\Delta = -4\\) corta al eje \\(x\\) en dos puntos.", a: false, j: "Falso. Si \\(\\Delta < 0\\), la ecuación \\(ax^2 + bx + c = 0\\) no tiene soluciones reales. Gráficamente, la parábola no toca el eje \\(x\\). Las soluciones son complejas conjugadas: \\(x = \\frac{-b \\pm \\sqrt{\\Delta}}{2a}\\) da raíces imaginarias." },
+        { q: "En una ecuación \\(x^2 = a\\) con \\(a > 0\\), la ecuación tiene dos soluciones reales opuestas.", a: true, j: "Verdadero. Si \\(a > 0\\), entonces \\(x = \\pm\\sqrt{a}\\). Son dos soluciones opuestas porque \\(\\sqrt{a} + (-\\sqrt{a}) = 0\\). Ejemplo: \\(x^2 = 9\\) da \\(x = 3\\) y \\(x = -3\\)." },
+        { q: "Al elevar ambos miembros de una ecuación al cuadrado, se pueden generar soluciones extrañas.", a: true, j: "Verdadero. Elevar al cuadrado no es una operación reversible (no inyectiva), por lo que puede introducir soluciones espurias. Ejemplo: \\(x = -3\\). Al elevar al cuadrado: \\(x^2 = 9\\), cuyas soluciones son \\(x = \\pm 3\\). La solución \\(x = 3\\) es extraña. Siempre hay que verificar." },
+        { q: "Dos ecuaciones son equivalentes si tienen el mismo conjunto de solución.", a: true, j: "Verdadero. Esa es la definición de ecuaciones equivalentes. Ejemplo: \\(2x = 6\\) y \\(x = 3\\) son equivalentes porque ambas tienen como único conjunto solución \\(\\{3\\}\\)." },
+        { q: "Una ecuación lineal siempre tiene exactamente una solución única en los reales.", a: false, j: "Falso. Una ecuación lineal \\(ax + b = 0\\) tiene una única solución solo si \\(a \\neq 0\\). Si \\(a = 0\\) y \\(b = 0\\): infinitas soluciones (identidad). Si \\(a = 0\\) y \\(b \\neq 0\\): ninguna solución (contradicción). Ejemplo: \\(0x = 5\\) no tiene solución." },
+        { q: "La ecuación \\(x^2 + 1 = 0\\) tiene dos soluciones en los números reales.", a: false, j: "Falso. \\(x^2 + 1 = 0 \\Rightarrow x^2 = -1\\), pero ningún número real al cuadrado da negativo. El discriminante es \\(\\Delta = 0 - 4 = -4 < 0\\). Las soluciones \\(x = \\pm i\\) son imaginarias, no reales." },
+        { q: "Si el discriminante de una ecuación cuadrática es cero, entonces no tiene solución.", a: false, j: "Falso. Si \\(\\Delta = 0\\), la ecuación tiene exactamente una solución real doble: \\(x = -\\frac{b}{2a}\\). Ejemplo: \\(x^2 - 6x + 9 = 0\\) tiene \\(\\Delta = 36 - 36 = 0\\), y la solución doble es \\(x = 3\\) (ya que \\((x-3)^2 = 0\\))." },
+        { q: "Para que \\(\\sqrt{(a+1)(a-2)}\\) sea real, \\(a\\) debe ser siempre positivo.", a: false, j: "Falso. Se necesita \\((a+1)(a-2) \\geq 0\\). Analizando signos: el producto es no negativo cuando ambos factores son no negativos (\\(a \\geq 2\\)) o ambos no positivos (\\(a \\leq -1\\)). Entonces el dominio es \\(a \\leq -1\\) o \\(a \\geq 2\\), que incluye valores negativos." },
+        { q: "La ecuación \\(|x| = -3\\) no tiene solución.", a: true, j: "Verdadero. El valor absoluto siempre es no negativo: \\(|x| \\geq 0\\) para todo \\(x \\in \\mathbb{R}\\). Como \\(-3 < 0\\), no existe ningún \\(x\\) tal que \\(|x| = -3\\). El conjunto solución es vacío." },
+        { q: "Si \\(x^2 = x\\), entonces \\(x = 1\\).", a: false, j: "Falso. \\(x^2 = x \\Rightarrow x^2 - x = 0 \\Rightarrow x(x - 1) = 0\\). Las soluciones son \\(x = 0\\) o \\(x = 1\\). Dividir por \\(x\\) sin verificar que \\(x \\neq 0\\) es un error que hace perder la solución \\(x = 0\\)." },
+        { q: "La ecuación \\(\\sqrt{x} = -2\\) tiene como solución \\(x = 4\\).", a: false, j: "Falso. La función raíz cuadrada \\(\\sqrt{x}\\) siempre devuelve un valor no negativo (\\(\\sqrt{x} \\geq 0\\)). Por lo tanto \\(\\sqrt{x} = -2\\) no tiene solución. Aunque \\((-2)^2 = 4\\), verificando: \\(\\sqrt{4} = 2 \\neq -2\\)." },
+        { q: "Si \\(a \\cdot b = 0\\), entonces \\(a = 0\\) o \\(b = 0\\) (o ambos).", a: true, j: "Verdadero. Es la propiedad del producto nulo en los números reales (que forman un dominio de integridad). Si el producto de dos reales es cero, al menos uno debe ser cero. Es la base para resolver ecuaciones factorizadas." },
+        { q: "La ecuación \\(2^x = 0\\) tiene solución real.", a: false, j: "Falso. La función exponencial \\(2^x\\) siempre es positiva: \\(2^x > 0\\) para todo \\(x \\in \\mathbb{R}\\). Nunca alcanza el valor 0. La gráfica se acerca asintóticamente al eje \\(x\\) por la izquierda pero nunca lo toca." },
+        { q: "Si \\(a^2 = b^2\\), entonces necesariamente \\(a = b\\).", a: false, j: "Falso. \\(a^2 = b^2 \\Rightarrow a^2 - b^2 = 0 \\Rightarrow (a-b)(a+b) = 0\\). Las soluciones son \\(a = b\\) o \\(a = -b\\). Ejemplo: \\(3^2 = (-3)^2 = 9\\), pero \\(3 \\neq -3\\)." },
+        { q: "La ecuación \\(\\frac{x}{x-1} = \\frac{1}{x-1}\\) tiene solución \\(x = 1\\).", a: false, j: "Falso. Si sustituimos \\(x = 1\\), ambos denominadores se anulan: \\(\\frac{1}{0}\\) no está definido. Aunque algebraicamente parecería que \\(x = 1\\), esta solución debe descartarse por estar fuera del dominio. La ecuación no tiene solución." },
+        { q: "Toda ecuación de grado 2 tiene exactamente dos soluciones reales.", a: false, j: "Falso. Depende del discriminante \\(\\Delta = b^2 - 4ac\\): si \\(\\Delta > 0\\), hay 2 soluciones reales distintas; si \\(\\Delta = 0\\), hay 1 solución real doble; si \\(\\Delta < 0\\), no hay soluciones reales (solo complejas)." },
 
-        // === MÓDULO 4: FUNCIONES ===
-        { q: "Si una recta tiene pendiente nula (m = 0), es paralela al eje de ordenadas.", a: false, j: "Falso. Es horizontal, paralela al eje x." },
-        { q: "Dos rectas son perpendiculares si el producto de sus pendientes es -1.", a: true, j: "Correcto." },
-        { q: "La función cuadrática f(x) = ax^2 + c siempre interseca al eje y en (0, c).", a: true, j: "Correcto." },
-        { q: "El eje de simetría de una parábola siempre pasa por el punto medio entre sus raíces reales.", a: true, j: "Correcto." },
-        { q: "El dominio de cualquier función polinómica son todos los números reales.", a: true, j: "Correcto." },
-        { q: "El logaritmo de una suma es igual a la suma de los logaritmos: log(A+B) = log A + log B.", a: false, j: "Falso. Esa propiedad es para el producto." },
-        { q: "La función inversa de la exponencial es la función logarítmica.", a: true, j: "Correcto." },
-        { q: "Si el vértice de una parábola está sobre el eje x, la ecuación cuadrática tiene una raíz doble.", a: true, j: "Correcto." },
-        { q: "Cuando la base es una fracción (0 < base < 1), a medida que x aumenta, el resultado disminuye.", a: true, j: "Correcto. Es decreciente." },
-        { q: "Una función es creciente si, al aumentar x, el valor de f(x) disminuye.", a: false, j: "Falso. Esa es la definición de decreciente." },
-        { q: "La parábola y = -2x^2 + 5 tiene un valor máximo absoluto.", a: true, j: "Correcto. Abre hacia abajo." },
+        // =====================================================================
+        // === MÓDULO 4: FUNCIONES (21 preguntas) ===
+        // =====================================================================
+        { q: "Si una recta tiene pendiente nula (\\(m = 0\\)), es paralela al eje de ordenadas.", a: false, j: "Falso. Si \\(m = 0\\), la recta es horizontal (paralela al eje \\(x\\), que es el eje de abscisas). Las rectas paralelas al eje de ordenadas (eje \\(y\\)) son verticales y tienen pendiente indefinida (no nula)." },
+        { q: "Dos rectas son perpendiculares si el producto de sus pendientes es \\(-1\\).", a: true, j: "Verdadero. Si dos rectas tienen pendientes \\(m_1\\) y \\(m_2\\), son perpendiculares si y solo si \\(m_1 \\cdot m_2 = -1\\) (equivalentemente, \\(m_2 = -\\frac{1}{m_1}\\)). Ejemplo: rectas con pendientes \\(2\\) y \\(-\\frac{1}{2}\\) son perpendiculares." },
+        { q: "La función cuadrática \\(f(x) = ax^2 + c\\) siempre interseca al eje \\(y\\) en \\((0, c)\\).", a: true, j: "Verdadero. La intersección con el eje \\(y\\) se obtiene evaluando en \\(x = 0\\): \\(f(0) = a(0)^2 + c = c\\). Esto vale para cualquier función de la forma \\(f(x) = ax^2 + bx + c\\): la ordenada al origen siempre es \\(c\\)." },
+        { q: "El eje de simetría de una parábola siempre pasa por el punto medio entre sus raíces reales.", a: true, j: "Verdadero. Si la parábola \\(y = ax^2 + bx + c\\) tiene raíces \\(x_1\\) y \\(x_2\\), el eje de simetría es \\(x = \\frac{x_1 + x_2}{2} = -\\frac{b}{2a}\\), que coincide con el punto medio entre las raíces. El vértice se ubica exactamente en este eje." },
+        { q: "El dominio de cualquier función polinómica son todos los números reales.", a: true, j: "Verdadero. Los polinomios están definidos para todo \\(x \\in \\mathbb{R}\\) porque solo involucran sumas, restas y multiplicaciones de números reales, operaciones que siempre están definidas. No hay denominadores que puedan anularse ni raíces de números negativos." },
+        { q: "\\(\\log(A + B) = \\log A + \\log B\\).", a: false, j: "Falso. La propiedad correcta del logaritmo del producto es \\(\\log(A \\cdot B) = \\log A + \\log B\\). El logaritmo de una suma NO se simplifica. \\(\\log(A + B)\\) no puede separarse. Confundir esto es un error muy frecuente." },
+        { q: "La función inversa de la exponencial es la función logarítmica.", a: true, j: "Verdadero. Si \\(f(x) = a^x\\) (con \\(a > 0, a \\neq 1\\)), su inversa es \\(f^{-1}(x) = \\log_a x\\). Se cancelan mutuamente: \\(\\log_a(a^x) = x\\) y \\(a^{\\log_a x} = x\\). La gráfica de una es el reflejo de la otra respecto a \\(y = x\\)." },
+        { q: "Si el vértice de una parábola está sobre el eje \\(x\\), la ecuación cuadrática tiene una raíz doble.", a: true, j: "Verdadero. Si el vértice toca el eje \\(x\\), significa que la parábola solo tiene un punto de contacto con el eje, lo que corresponde a \\(\\Delta = 0\\). La raíz doble es \\(x = -\\frac{b}{2a}\\), que es la coordenada \\(x\\) del vértice." },
+        { q: "Cuando la base es una fracción (\\(0 < b < 1\\)), a medida que \\(x\\) aumenta, \\(b^x\\) disminuye.", a: true, j: "Verdadero. Ejemplo con \\(b = \\frac{1}{2}\\): \\((\\frac{1}{2})^1 = 0.5\\), \\((\\frac{1}{2})^2 = 0.25\\), \\((\\frac{1}{2})^3 = 0.125\\). La función exponencial con base entre 0 y 1 es estrictamente decreciente." },
+        { q: "Una función es creciente si, al aumentar \\(x\\), el valor de \\(f(x)\\) disminuye.", a: false, j: "Falso. Esa es la definición de función decreciente. Una función es creciente en un intervalo si para \\(x_1 < x_2\\) se cumple \\(f(x_1) < f(x_2)\\) (al aumentar \\(x\\), \\(f(x)\\) también aumenta)." },
+        { q: "La parábola \\(y = -2x^2 + 5\\) tiene un valor máximo absoluto.", a: true, j: "Verdadero. Como el coeficiente de \\(x^2\\) es \\(-2 < 0\\), la parábola abre hacia abajo. El vértice es el punto más alto: \\(x_v = 0\\), \\(y_v = 5\\). El máximo absoluto de la función es \\(5\\), alcanzado en \\(x = 0\\)." },
+        { q: "La parábola \\(y = hx^2 + 3x + 2\\) no cruza el eje \\(x\\) cuando \\(h > 0\\).", a: false, j: "Falso. Que la parábola cruce o no el eje \\(x\\) depende del discriminante \\(\\Delta = 9 - 8h\\), no solo del signo de \\(h\\). Si \\(h > 0\\) pero \\(h < \\frac{9}{8}\\), entonces \\(\\Delta > 0\\) y la parábola sí cruza el eje \\(x\\)." },
+        { q: "\\(\\log_2 t = m^3\\) es equivalente a \\(2^{m^3} = t\\).", a: true, j: "Verdadero. Por definición de logaritmo: \\(\\log_b x = y \\Leftrightarrow b^y = x\\). Aquí, \\(\\log_2 t = m^3\\) significa exactamente que \\(2^{m^3} = t\\). Es simplemente pasar de forma logarítmica a forma exponencial." },
+        { q: "El rango de la función \\(f(x) = x^2\\) es \\(\\mathbb{R}\\).", a: false, j: "Falso. Como \\(x^2 \\geq 0\\) para todo \\(x \\in \\mathbb{R}\\), el rango (imagen) es \\([0, +\\infty)\\), no todos los reales. La función nunca toma valores negativos." },
+        { q: "La función \\(f(x) = \\frac{1}{x}\\) tiene como dominio todos los reales.", a: false, j: "Falso. La función \\(f(x) = \\frac{1}{x}\\) no está definida en \\(x = 0\\) (división por cero). Su dominio es \\(\\mathbb{R} \\setminus \\{0\\} = (-\\infty, 0) \\cup (0, +\\infty)\\)." },
+        { q: "Si \\(f(x) = 2x + 3\\), entonces \\(f^{-1}(x) = \\frac{x - 3}{2}\\).", a: true, j: "Verdadero. Para hallar la inversa: \\(y = 2x + 3 \\Rightarrow x = \\frac{y - 3}{2}\\). Intercambiando: \\(f^{-1}(x) = \\frac{x-3}{2}\\). Verificación: \\(f(f^{-1}(x)) = 2 \\cdot \\frac{x-3}{2} + 3 = x\\)." },
+        { q: "Una función cuadrática con \\(a > 0\\) tiene un mínimo absoluto.", a: true, j: "Verdadero. Si \\(a > 0\\), la parábola abre hacia arriba y el vértice es el punto más bajo. El mínimo absoluto se alcanza en \\(x = -\\frac{b}{2a}\\) y su valor es \\(f\\left(-\\frac{b}{2a}\\right) = -\\frac{\\Delta}{4a}\\)." },
+        { q: "La composición de funciones es conmutativa: \\(f \\circ g = g \\circ f\\) siempre.", a: false, j: "Falso. En general \\(f(g(x)) \\neq g(f(x))\\). Ejemplo: \\(f(x) = x + 1\\), \\(g(x) = 2x\\). Entonces \\(f(g(x)) = 2x + 1\\) pero \\(g(f(x)) = 2(x+1) = 2x + 2\\). Son funciones distintas." },
+        { q: "El vértice de \\(f(x) = a(x-h)^2 + k\\) es el punto \\((h, k)\\).", a: true, j: "Verdadero. La forma canónica (o forma vértice) \\(f(x) = a(x-h)^2 + k\\) permite leer directamente el vértice: \\((h, k)\\). El valor \\(h\\) desplaza horizontalmente y \\(k\\) verticalmente respecto al origen." },
+        { q: "\\(\\log_a 1 = 0\\) para cualquier base \\(a > 0\\) con \\(a \\neq 1\\).", a: true, j: "Verdadero. Por definición: \\(\\log_a 1 = 0\\) porque \\(a^0 = 1\\) para cualquier \\(a > 0\\). Esto vale para cualquier base válida de logaritmo." },
+        { q: "Si \\(f(x) = |x|\\), entonces \\(f\\) es una función inyectiva.", a: false, j: "Falso. \\(f\\) no es inyectiva porque distintos valores de \\(x\\) pueden dar el mismo resultado: \\(f(3) = f(-3) = 3\\). Una función es inyectiva si \\(f(a) = f(b) \\Rightarrow a = b\\), lo cual falla aquí." },
 
-        // === MÓDULO 5: TRIGONOMETRÍA Y GEOMETRÍA ===
-        { q: "En un triángulo rectángulo, la hipotenusa es siempre el lado opuesto al ángulo recto.", a: true, j: "Correcto." },
-        { q: "El seno de un ángulo agudo puede tomar valores mayores que 1.", a: false, j: "Falso. Está entre 0 y 1." },
-        { q: "Si duplicamos el radio de un círculo, su área se duplica.", a: false, j: "Falso. El área se cuadruplica." },
-        { q: "En toda triángulo, la suma de los ángulos interiores es igual a dos ángulos rectos.", a: true, j: "Correcto. 180°." },
-        { q: "El Teorema de Pitágoras se cumple en triángulos obtusángulos.", a: false, j: "Falso. Solo en rectángulos." },
-        { q: "La tangente de un ángulo de 45° es igual a 1.", a: true, j: "Correcto." },
-        { q: "Si los tres lados de un triángulo son proporcionales a los de otro, los triángulos son semejantes.", a: true, j: "Correcto." },
-        { q: "La diagonal de un cuadrado de lado L mide L·√2.", a: true, j: "Correcto." },
-        { q: "Si un triángulo tiene lados de 3, 4 y 6 cm, es un triángulo rectángulo.", a: false, j: "Falso. No cumple Pitágoras." },
-        { q: "El perímetro de un sector circular depende únicamente del radio.", a: false, j: "Falso. Depende del radio y del ángulo." },
+        // =====================================================================
+        // === MÓDULO 5: TRIGONOMETRÍA Y GEOMETRÍA (20 preguntas) ===
+        // =====================================================================
+        { q: "En un triángulo rectángulo, la hipotenusa es siempre el lado opuesto al ángulo recto.", a: true, j: "Verdadero. Por definición, la hipotenusa es el lado más largo del triángulo rectángulo y se ubica frente al ángulo de \\(90°\\). Los otros dos lados se llaman catetos." },
+        { q: "El seno de un ángulo agudo puede tomar valores mayores que 1.", a: false, j: "Falso. Para un ángulo agudo \\(\\theta\\) (entre \\(0°\\) y \\(90°\\)), \\(\\sin\\theta = \\frac{\\text{cateto opuesto}}{\\text{hipotenusa}}\\). Como el cateto siempre es menor que la hipotenusa, \\(0 < \\sin\\theta < 1\\) (estrictamente menor que 1 para ángulos agudos)." },
+        { q: "Si duplicamos el radio de un círculo, su área se duplica.", a: false, j: "Falso. El área del círculo es \\(A = \\pi r^2\\). Si duplicamos el radio: \\(A' = \\pi(2r)^2 = 4\\pi r^2 = 4A\\). El área se cuadruplica, no se duplica. El área escala con el cuadrado del factor de escala." },
+        { q: "En todo triángulo, la suma de los ángulos interiores es igual a dos ángulos rectos.", a: true, j: "Verdadero. Dos ángulos rectos = \\(2 \\times 90° = 180°\\). La suma de los ángulos interiores de cualquier triángulo (plano euclidiano) es siempre \\(180°\\). Esto se demuestra trazando una paralela a un lado por el vértice opuesto." },
+        { q: "El Teorema de Pitágoras se cumple en triángulos obtusángulos.", a: false, j: "Falso. El Teorema de Pitágoras (\\(a^2 + b^2 = c^2\\)) solo vale para triángulos rectángulos. En triángulos obtusángulos se aplica la generalización (Ley de Cosenos): \\(c^2 = a^2 + b^2 - 2ab\\cos C\\), donde si \\(C > 90°\\), \\(\\cos C < 0\\) y resulta \\(c^2 > a^2 + b^2\\)." },
+        { q: "La tangente de un ángulo de \\(45°\\) es igual a 1.", a: true, j: "Verdadero. \\(\\tan 45° = \\frac{\\sin 45°}{\\cos 45°} = \\frac{\\frac{\\sqrt{2}}{2}}{\\frac{\\sqrt{2}}{2}} = 1\\). Geométricamente, en un triángulo rectángulo isósceles (\\(45°\\)-\\(45°\\)-\\(90°\\)), ambos catetos son iguales, así que su cociente es 1." },
+        { q: "Si los tres lados de un triángulo son proporcionales a los de otro, los triángulos son semejantes.", a: true, j: "Verdadero. Es el criterio de semejanza LLL (Lado-Lado-Lado): si las razones de los tres pares de lados correspondientes son iguales, los triángulos son semejantes y tienen los mismos ángulos." },
+        { q: "La diagonal de un cuadrado de lado \\(L\\) mide \\(L\\sqrt{2}\\).", a: true, j: "Verdadero. Aplicando Pitágoras al triángulo formado por dos lados y la diagonal: \\(d^2 = L^2 + L^2 = 2L^2\\), entonces \\(d = L\\sqrt{2}\\)." },
+        { q: "Si un triángulo tiene lados de 3, 4 y 6 cm, es un triángulo rectángulo.", a: false, j: "Falso. Para ser rectángulo, debe cumplir Pitágoras con el lado mayor como hipotenusa: \\(3^2 + 4^2 = 9 + 16 = 25\\), pero \\(6^2 = 36 \\neq 25\\). La terna pitagórica correcta sería 3, 4, 5." },
+        { q: "El perímetro de un sector circular depende únicamente del radio.", a: false, j: "Falso. El perímetro de un sector circular es \\(P = 2r + r\\theta\\) (dos radios + arco), donde \\(\\theta\\) es el ángulo central en radianes. Depende tanto del radio \\(r\\) como del ángulo \\(\\theta\\)." },
+        { q: "En cualquier triángulo rectángulo, la suma de sus ángulos interiores es siempre \\(90°\\).", a: false, j: "Falso. La suma de los ángulos interiores de cualquier triángulo es \\(180°\\), no \\(90°\\). En un triángulo rectángulo, un ángulo es \\(90°\\) y los otros dos suman \\(90°\\) (son complementarios), pero la suma total sigue siendo \\(180°\\)." },
+        { q: "Si una escalera de 6 m está apoyada contra un muro y forma un ángulo de \\(22°\\) con el suelo, la distancia del pie al muro es 3,4 m.", a: false, j: "Falso. La distancia horizontal es \\(d = 6 \\cdot \\cos(22°) \\approx 6 \\times 0.927 = 5.56\\) m, no 3.4 m. El coseno del ángulo con el suelo da la componente horizontal: cateto adyacente = hipotenusa \\(\\times \\cos\\theta\\)." },
+        { q: "Si duplicamos los lados de un triángulo, su área se cuadruplica.", a: true, j: "Verdadero. El área escala con el cuadrado del factor de escala. Si todos los lados se multiplican por \\(k\\), el área se multiplica por \\(k^2\\). Con \\(k = 2\\): \\(A' = 2^2 \\cdot A = 4A\\)." },
+        { q: "Si duplicamos los lados de un cuadrado, su área se cuadruplica.", a: true, j: "Verdadero. Área original: \\(A = L^2\\). Con lados duplicados: \\(A' = (2L)^2 = 4L^2 = 4A\\). El área se multiplica por el cuadrado del factor de escala lineal." },
+        { q: "Sabiendo que \\(\\sin\\theta = \\frac{3}{5}\\), entonces \\(\\cos\\theta \\cdot \\tan\\theta = \\frac{3}{5}\\).", a: true, j: "Verdadero. \\(\\cos\\theta \\cdot \\tan\\theta = \\cos\\theta \\cdot \\frac{\\sin\\theta}{\\cos\\theta} = \\sin\\theta = \\frac{3}{5}\\). Los \\(\\cos\\theta\\) se cancelan algebraicamente, independientemente del valor de \\(\\theta\\)." },
+        { q: "El área de un triángulo equilátero de lado \\(a\\) es \\(\\frac{a^2\\sqrt{3}}{4}\\).", a: true, j: "Verdadero. En un triángulo equilátero de lado \\(a\\), la altura es \\(h = \\frac{a\\sqrt{3}}{2}\\) (por Pitágoras). El área es \\(A = \\frac{base \\times altura}{2} = \\frac{a \\cdot \\frac{a\\sqrt{3}}{2}}{2} = \\frac{a^2\\sqrt{3}}{4}\\)." },
+        { q: "\\(\\sin^2\\theta + \\cos^2\\theta = 1\\) para todo ángulo \\(\\theta\\).", a: true, j: "Verdadero. Es la identidad pitagórica fundamental de la trigonometría. Se deduce directamente del Teorema de Pitágoras aplicado al círculo unitario: si \\((\\cos\\theta, \\sin\\theta)\\) es un punto del círculo \\(x^2 + y^2 = 1\\), entonces \\(\\cos^2\\theta + \\sin^2\\theta = 1\\)." },
+        { q: "\\(\\sin(2\\theta) = 2\\sin\\theta\\) para todo \\(\\theta\\).", a: false, j: "Falso. La fórmula correcta del seno del doble ángulo es \\(\\sin(2\\theta) = 2\\sin\\theta \\cdot \\cos\\theta\\). Falta multiplicar por \\(\\cos\\theta\\). Ejemplo: \\(\\sin(90°) = 1\\), pero \\(2\\sin(45°) = 2 \\cdot \\frac{\\sqrt{2}}{2} = \\sqrt{2} \\neq 1\\)." },
+        { q: "En un triángulo, el lado mayor se opone al ángulo mayor.", a: true, j: "Verdadero. Es una propiedad fundamental de los triángulos: en cualquier triángulo, el lado de mayor longitud está siempre opuesto al ángulo de mayor medida, y viceversa." },
+        { q: "Dos triángulos con los mismos ángulos son necesariamente congruentes.", a: false, j: "Falso. Dos triángulos con los mismos ángulos son semejantes, pero no necesariamente congruentes (del mismo tamaño). Uno puede ser una versión escalada del otro. Para congruencia se necesita al menos una condición sobre lados (como LAL, ALA, LLL)." },
 
-        // === MÓDULO 6: POTENCIACIÓN Y RADICACIÓN ===
-        { q: "La expresión (a·b)^n = a^n · b^n es válida para cualquier número real.", a: true, j: "Correcto." },
-        { q: "Un número negativo elevado a un exponente par da resultado negativo.", a: false, j: "Falso. Da positivo." },
-        { q: "a^(m/n) es equivalente a la raíz enésima de a elevada a la m.", a: true, j: "Correcto." },
-        { q: "La potencia de una potencia se resuelve sumando los exponentes.", a: false, j: "Falso. Se multiplican." },
-        { q: "Todo número real distinto de cero elevado a la potencia cero es igual a 1.", a: true, j: "Correcto." },
-
-        // === NUEVAS PREGUNTAS (DE LAS IMÁGENES) ===
-        { q: "1 - log_m(t^m) = -log_m t", a: false, j: "No es una identidad. Solo se cumple para valores específicos de m y t." },
-        { q: "En cualquier triángulo rectángulo, la suma de sus ángulos interiores es siempre 90°.", a: false, j: "Falso. La suma de los ángulos de cualquier triángulo es 180°." },
-        { q: "Si una escalera de 6 m está apoyada contra un muro y forma un ángulo de 22°, la distancia del pie al muro es 3,4 m.", a: false, j: "Falso. La distancia es 6·cos(22°) ≈ 5,56 m." },
-        { q: "La raíz cuadrada de un número siempre es menor que el número original, √a < a.", a: false, j: "Falso. Si 0 < a < 1, √a > a." },
-        { q: "El número 5/13 tiene una expresión decimal infinita no periódica.", a: false, j: "Falso. Es racional, por lo tanto su decimal es periódico." },
-        { q: "El polinomio q(x) = x^4 - 10x^2 - 25 es un trinomio cuadrado perfecto.", a: false, j: "Falso. Debería ser x^4 -10x^2 + 25." },
-        { q: "Al resolver: [7^{1-3t} · 7^{2t-1}] : 7^{-t}, la solución es 1.", a: true, j: "Correcto. 7^{-t} : 7^{-t} = 1." },
-        { q: "Si multiplicamos dos números irracionales, el resultado siempre es irracional.", a: false, j: "Falso. √2 · √2 = 2 (racional)." },
-        { q: "Si P(x) es grado 2 y Q(x) es grado 3, entonces P(x)·Q(x) es grado 5.", a: true, j: "Correcto. Los grados se suman." },
-        { q: "La parábola y = hx^2 + 3x + 2 no cruza al eje x cuando h > 0.", a: false, j: "Falso. Depende del discriminante." },
-        { q: "Si duplicamos los lados de un triángulo, su área se cuadruplica.", a: true, j: "Correcto. El área escala con el cuadrado." },
-        { q: "Si un polinomio H(x) tiene una raíz racional, entonces debe ser un número entero.", a: false, j: "Falso. Ej: 2x - 1 tiene raíz 1/2." },
-        { q: "La forma factorizada de g(x) = 3x^2 + 3x - 6 es 3(x - 2)(x + 1).", a: false, j: "Falso. Es 3(x + 2)(x - 1)." },
-        { q: "Si el discriminante de una ecuación cuadrática es cero, entonces no existe solución.", a: false, j: "Falso. Hay una solución doble." },
-        { q: "Para que √[(a+1)(a-2)] sea real, a debe ser siempre positivo.", a: false, j: "Falso. Debe cumplir (a+1)(a-2) ≥ 0 → a ≤ -1 o a ≥ 2." },
-        { q: "Siendo p ≠ 0, n < 0, p^n = (1/p)^{-n}.", a: true, j: "Correcto. Es una propiedad de exponentes negativos." },
-        { q: "El polinomio Q(x) = x^4 - 8x^2 + 16 es un trinomio cuadrado perfecto.", a: true, j: "Correcto. Es (x^2 - 4)^2." },
-        { q: "El número 7/13 tiene una expresión decimal infinita no periódica.", a: false, j: "Falso. Es racional, su decimal es periódico." },
-        { q: "Al resolver: 5^{-3m+1}·5^{2m-1} : 5^{-m}, la solución es 5.", a: false, j: "Falso. El resultado es 1." },
-        { q: "log_2 t = m^3 es equivalente a 2^{m^3} = t.", a: true, j: "Correcto. Por definición de logaritmo." },
-        { q: "Siendo q ≠ 0, n ∈ Z⁺, q^{-n} = (-q)^n.", a: false, j: "Falso. q^{-n} = 1/q^n, que es diferente." },
-        { q: "Sabiendo que sen θ = 3/5, entonces cos θ · tg θ = 3/5.", a: true, j: "Correcto. tg θ = sen θ / cos θ, entonces cos θ · tg θ = sen θ." },
-        { q: "∛[(a - b)^6] = ∛(a^6) - ∛(b^6).", a: false, j: "Falso. La raíz de una resta no es distributiva." },
-        { q: "Si duplicamos los lados de un cuadrado, su área se cuadruplica.", a: true, j: "Correcto. Área = l², (2l)² = 4l²." }
+        // =====================================================================
+        // === MÓDULO 6: POTENCIACIÓN Y RADICACIÓN (15 preguntas) ===
+        // =====================================================================
+        { q: "La expresión \\((a \\cdot b)^n = a^n \\cdot b^n\\) es válida para cualquier número real.", a: true, j: "Verdadero. Es la propiedad distributiva de la potencia respecto al producto. Para cualquier \\(a, b \\in \\mathbb{R}\\) y \\(n \\in \\mathbb{Z}\\): \\((ab)^n = \\underbrace{(ab)(ab)\\cdots(ab)}_{n} = a^n \\cdot b^n\\)." },
+        { q: "Un número negativo elevado a un exponente par da resultado negativo.", a: false, j: "Falso. Un número negativo elevado a un exponente par da positivo: \\((-a)^{2k} = a^{2k} > 0\\). Ejemplo: \\((-3)^2 = 9\\), \\((-2)^4 = 16\\). El signo negativo se \"cancela\" al multiplicarse un número par de veces." },
+        { q: "\\(a^{m/n}\\) es equivalente a la raíz enésima de \\(a\\) elevada a la \\(m\\).", a: true, j: "Verdadero. Por definición: \\(a^{m/n} = \\sqrt[n]{a^m} = (\\sqrt[n]{a})^m\\). Ejemplo: \\(8^{2/3} = \\sqrt[3]{8^2} = \\sqrt[3]{64} = 4\\), o bien \\((\\sqrt[3]{8})^2 = 2^2 = 4\\)." },
+        { q: "La potencia de una potencia se resuelve sumando los exponentes.", a: false, j: "Falso. La potencia de una potencia se resuelve multiplicando los exponentes: \\((a^m)^n = a^{m \\cdot n}\\). Los exponentes se suman en la multiplicación de potencias de misma base: \\(a^m \\cdot a^n = a^{m+n}\\). Son propiedades diferentes." },
+        { q: "Todo número real distinto de cero elevado a la potencia cero es igual a 1.", a: true, j: "Verdadero. \\(a^0 = 1\\) para todo \\(a \\neq 0\\). Se justifica así: \\(a^n / a^n = a^{n-n} = a^0\\), y como \\(a^n / a^n = 1\\), entonces \\(a^0 = 1\\). Nota: \\(0^0\\) es una indeterminación." },
+        { q: "Al resolver \\(\\frac{7^{1-3t} \\cdot 7^{2t-1}}{7^{-t}}\\), la solución es 1.", a: true, j: "Verdadero. Numerador: \\(7^{(1-3t)+(2t-1)} = 7^{-t}\\). Entonces: \\(\\frac{7^{-t}}{7^{-t}} = 7^{-t-(-t)} = 7^0 = 1\\). Se usa la propiedad \\(a^m \\cdot a^n = a^{m+n}\\) y \\(\\frac{a^m}{a^n} = a^{m-n}\\)." },
+        { q: "Siendo \\(p \\neq 0\\) y \\(n < 0\\), se cumple que \\(p^n = \\left(\\frac{1}{p}\\right)^{-n}\\).", a: true, j: "Verdadero. Como \\(n < 0\\), tenemos \\(-n > 0\\). Entonces: \\(p^n = \\frac{1}{p^{-n}} = \\left(\\frac{1}{p}\\right)^{-n}\\). Ejemplo: \\(2^{-3} = \\frac{1}{2^3} = \\left(\\frac{1}{2}\\right)^3 = \\frac{1}{8}\\)." },
+        { q: "Siendo \\(q \\neq 0\\) y \\(n \\in \\mathbb{Z}^+\\), se cumple que \\(q^{-n} = (-q)^n\\).", a: false, j: "Falso. \\(q^{-n} = \\frac{1}{q^n}\\), mientras que \\((-q)^n = (-1)^n \\cdot q^n\\). Son completamente diferentes. Ejemplo con \\(q = 2, n = 3\\): \\(2^{-3} = \\frac{1}{8}\\), pero \\((-2)^3 = -8\\)." },
+        { q: "\\(1 - \\log_m(t^m) = -\\log_m t\\).", a: false, j: "Falso. \\(\\log_m(t^m) = m \\cdot \\log_m t\\). Entonces \\(1 - m\\log_m t\\). Para que esto iguale \\(-\\log_m t\\), necesitaríamos \\(m = 1\\), pero \\(\\log_1\\) no existe. La igualdad no es una identidad general." },
+        { q: "Al resolver \\(5^{-3m+1} \\cdot 5^{2m-1} \\div 5^{-m}\\), la solución es 5.", a: false, j: "Falso. Exponente del numerador: \\((-3m+1)+(2m-1) = -m\\). Dividiendo: \\(5^{-m} \\div 5^{-m} = 5^{-m-(-m)} = 5^0 = 1\\), no 5." },
+        { q: "\\(\\sqrt[3]{(a - b)^6} = \\sqrt[3]{a^6} - \\sqrt[3]{b^6}\\).", a: false, j: "Falso. La raíz cúbica NO se distribuye sobre la resta. Lo correcto: \\(\\sqrt[3]{(a-b)^6} = ((a-b)^6)^{1/3} = (a-b)^2\\). No es igual a \\(a^2 - b^2\\). La raíz de una diferencia NO es la diferencia de las raíces." },
+        { q: "\\(\\sqrt{a^2} = a\\) para todo número real \\(a\\).", a: false, j: "Falso. \\(\\sqrt{a^2} = |a|\\), no \\(a\\). Si \\(a < 0\\), por ejemplo \\(a = -3\\): \\(\\sqrt{(-3)^2} = \\sqrt{9} = 3 = |-3|\\), no \\(-3\\). La raíz cuadrada siempre devuelve un valor no negativo." },
+        { q: "\\(\\left(\\frac{a}{b}\\right)^n = \\frac{a^n}{b^n}\\) con \\(b \\neq 0\\).", a: true, j: "Verdadero. La potencia se distribuye sobre el cociente: \\(\\left(\\frac{a}{b}\\right)^n = \\frac{a^n}{b^n}\\). Ejemplo: \\(\\left(\\frac{2}{3}\\right)^3 = \\frac{2^3}{3^3} = \\frac{8}{27}\\)." },
+        { q: "\\(a^{-1} + b^{-1} = (a+b)^{-1}\\).", a: false, j: "Falso. \\(a^{-1} + b^{-1} = \\frac{1}{a} + \\frac{1}{b} = \\frac{a+b}{ab}\\), mientras que \\((a+b)^{-1} = \\frac{1}{a+b}\\). Son expresiones completamente distintas. Ejemplo: \\(\\frac{1}{2} + \\frac{1}{3} = \\frac{5}{6}\\), pero \\(\\frac{1}{5} = 0.2\\)." },
+        { q: "\\(2^3 \\cdot 2^4 = 2^{12}\\).", a: false, j: "Falso. Al multiplicar potencias de misma base se suman los exponentes: \\(2^3 \\cdot 2^4 = 2^{3+4} = 2^7 = 128\\). El resultado \\(2^{12} = 4096\\) sería si se multiplicaran los exponentes, lo cual corresponde a \\((2^3)^4\\)." }
     ];
 
     // Estado de la aplicación
@@ -253,6 +362,127 @@
         incorrectAnswers: 0,
         results: []
     };
+
+    // ==================== SISTEMA DE HISTORIAL ====================
+    const HISTORY_KEY = 'master_tomi_history';
+
+    function getHistory() {
+        try {
+            return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+        } catch { return []; }
+    }
+
+    function saveAttempt(mode, score, correct, incorrect, total) {
+        const history = getHistory();
+        history.push({
+            date: new Date().toISOString(),
+            mode,
+            score,
+            correct,
+            incorrect,
+            total
+        });
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function clearHistory() {
+        if (confirm('¿Seguro que querés borrar todo el historial?')) {
+            localStorage.removeItem(HISTORY_KEY);
+            renderHistory();
+        }
+    }
+
+    function toggleHistory() {
+        document.getElementById('history-overlay').classList.toggle('open');
+        renderHistory();
+    }
+
+    function closeHistoryOutside(e) {
+        if (e.target === document.getElementById('history-overlay')) toggleHistory();
+    }
+
+    function renderHistory() {
+        const history = getHistory();
+        const container = document.getElementById('history-content');
+        const clearBtn = document.getElementById('clear-history-btn');
+
+        if (history.length === 0) {
+            container.innerHTML = '<div class="empty-history"><p>Todavía no hay intentos registrados.</p><p style="margin-top:10px;">¡Completá un quiz para ver tu progreso!</p></div>';
+            clearBtn.style.display = 'none';
+            return;
+        }
+
+        clearBtn.style.display = 'inline-block';
+
+        // Stats
+        const totalAttempts = history.length;
+        const avgScore = history.reduce((s, h) => s + h.score, 0) / totalAttempts;
+        const bestScore = Math.max(...history.map(h => h.score));
+
+        // Trend
+        let trendHTML = '';
+        if (history.length >= 2) {
+            const last = history[history.length - 1].score;
+            const prev = history[history.length - 2].score;
+            if (last > prev) trendHTML = '<div class="trend-indicator trend-up">↑ Mejorando</div>';
+            else if (last < prev) trendHTML = '<div class="trend-indicator trend-down">↓ Bajó</div>';
+            else trendHTML = '<div class="trend-indicator trend-same">→ Igual</div>';
+        }
+
+        let html = `
+            <div class="history-stats">
+                <div class="h-stat-card">
+                    <div class="h-stat-val">${totalAttempts}</div>
+                    <div class="h-stat-lbl">Intentos</div>
+                </div>
+                <div class="h-stat-card">
+                    <div class="h-stat-val">${avgScore.toFixed(1)}</div>
+                    <div class="h-stat-lbl">Promedio</div>
+                    ${trendHTML}
+                </div>
+                <div class="h-stat-card">
+                    <div class="h-stat-val">${bestScore.toFixed(1)}</div>
+                    <div class="h-stat-lbl">Mejor</div>
+                </div>
+            </div>
+        `;
+
+        // Entries (newest first)
+        const reversed = [...history].reverse();
+        reversed.forEach((h, i) => {
+            const d = new Date(h.date);
+            const dateStr = d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+            const pct = h.total > 0 ? ((h.correct / h.total) * 100).toFixed(0) : 0;
+            const scoreClass = h.score >= 9 ? 'good' : h.score >= 5 ? 'mid' : 'bad';
+            const label = i === 0 ? ' (último)' : '';
+
+            html += `
+                <div class="history-entry">
+                    <div class="h-info">
+                        <div class="h-mode">${h.mode === 'serio' ? 'Modo Serio' : 'Modo Iniciante'}${label}</div>
+                        <div class="h-detail">${h.correct}/${h.total} correctas (${pct}%) · ${h.incorrect} errores</div>
+                        <div class="h-date">${dateStr}</div>
+                    </div>
+                    <div class="h-score ${scoreClass}">${h.score.toFixed(1)}</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // ==================== LÓGICA DEL JUEGO ====================
+    function renderLatex(element) {
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(element, {
+                delimiters: [
+                    { left: '\\(', right: '\\)', display: false },
+                    { left: '\\[', right: '\\]', display: true }
+                ],
+                throwOnError: false
+            });
+        }
+    }
 
     function openOptions(mode) {
         document.getElementById('iniciante-options').style.display = 'block';
@@ -293,8 +523,10 @@
     function loadQuestion() {
         const q = state.questions[state.currentIndex];
         document.getElementById('curr-q').innerText = state.currentIndex + 1;
-        document.getElementById('question-text').innerText = q.q;
-        
+        const qBox = document.getElementById('question-text');
+        qBox.innerHTML = '<span class="q-inner">' + q.q + '</span>';
+        renderLatex(qBox);
+
         document.getElementById('action-buttons').style.display = 'flex';
         document.getElementById('feedback-panel').style.display = 'none';
     }
@@ -313,13 +545,13 @@
     function handleAnswer(userAns) {
         const q = state.questions[state.currentIndex];
         const isCorrect = userAns === q.a;
-        
+
         if (isCorrect) {
             state.correctAnswers++;
         } else {
             state.incorrectAnswers++;
         }
-        
+
         state.results.push({ q: q.q, user: userAns, correct: q.a, just: q.j, hit: isCorrect });
 
         if (state.mode === 'iniciante') {
@@ -335,8 +567,10 @@
         const panel = document.getElementById('feedback-panel');
         panel.style.display = 'block';
         panel.className = 'feedback-area ' + (hit ? 'feedback-correct' : 'feedback-wrong');
-        document.getElementById('feedback-title').innerText = hit ? '¡Excelente! ✨' : 'Ups... Corregimos 📚';
-        document.getElementById('feedback-text').innerText = text;
+        document.getElementById('feedback-title').innerText = hit ? '¡Excelente!' : 'Ups... Corregimos';
+        const feedbackText = document.getElementById('feedback-text');
+        feedbackText.innerHTML = text;
+        renderLatex(feedbackText);
     }
 
     function nextQuestion() {
@@ -350,22 +584,25 @@
 
     function showFinalResults() {
         showScreen('results-screen');
-        
+
         const finalScore = calculateScore();
         const totalPossible = state.questions.length;
         const scoreDisplay = document.getElementById('final-score');
         const msgDisplay = document.getElementById('final-msg');
         const subtext = document.getElementById('final-subtext');
 
+        // Guardar en historial
+        saveAttempt(state.mode, finalScore, state.correctAnswers, state.incorrectAnswers, totalPossible);
+
         scoreDisplay.innerText = finalScore.toFixed(1);
 
         if (state.mode === 'serio') {
             if (finalScore >= 9) {
-                msgDisplay.innerText = "¡Aprobaste para pasar al examen práctico! 🏆";
+                msgDisplay.innerText = "¡Aprobaste para pasar al examen práctico!";
                 msgDisplay.style.color = "var(--success-color)";
                 subtext.innerText = `Puntaje final: ${finalScore.toFixed(1)}.`;
             } else {
-                msgDisplay.innerText = "Tenés que seguir practicando... 📚";
+                msgDisplay.innerText = "Tenés que seguir practicando...";
                 msgDisplay.style.color = "var(--error-color)";
                 subtext.innerText = `Puntaje final: ${finalScore.toFixed(1)}.`;
             }
@@ -383,9 +620,10 @@
             item.innerHTML = `
                 <p><strong>Pregunta:</strong> ${r.q}</p>
                 <p>Tu respuesta: <b>${r.user ? 'V' : 'F'}</b> | Correcta: <b>${r.correct ? 'V' : 'F'}</b></p>
-                <p style="font-size: 0.85rem; margin-top:5px;"><i>${r.just}</i></p>
+                <p style="font-size: 0.85rem; margin-top:5px;"><em>${r.just}</em></p>
             `;
             container.appendChild(item);
+            renderLatex(item);
         });
     }
 
@@ -393,6 +631,17 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
+
+    // Inicializar KaTeX cuando esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        // Esperar a que KaTeX se cargue
+        const checkKatex = setInterval(() => {
+            if (typeof renderMathInElement === 'function') {
+                clearInterval(checkKatex);
+                renderLatex(document.body);
+            }
+        }, 100);
+    });
 </script>
 
 </body>
