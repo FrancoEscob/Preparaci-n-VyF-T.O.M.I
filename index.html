@@ -120,11 +120,45 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
+        /* ===== FORMULARIO ===== */
+        .formulas-container { max-width: 900px; margin: 30px auto 60px; padding: 0 20px; }
+        .formulas-toggle { width: 100%; padding: 18px 25px; background: var(--secondary-color); color: white; border: none; border-radius: 15px; font-family: inherit; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
+        .formulas-toggle:hover { background: #1a252f; }
+        .formulas-toggle .arrow { transition: transform 0.3s; font-style: normal; }
+        .formulas-toggle.open .arrow { transform: rotate(180deg); }
+
+        .formulas-body { display: none; margin-top: 15px; }
+        .formulas-body.open { display: block; }
+
+        .formula-section { background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.07); margin-bottom: 15px; overflow: hidden; }
+        .formula-section-header { padding: 16px 22px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; border-left: 5px solid var(--primary-color); }
+        .formula-section-header:hover { background: #f8f9fa; }
+        .formula-section-header h3 { font-size: 1rem; color: var(--secondary-color); display: flex; align-items: center; gap: 10px; }
+        .formula-section-header .sec-arrow { font-size: 0.85rem; color: #95a5a6; transition: transform 0.25s; }
+        .formula-section-header.open .sec-arrow { transform: rotate(180deg); }
+
+        .formula-section-body { display: none; padding: 5px 22px 20px; }
+        .formula-section-body.open { display: block; }
+
+        .formula-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-top: 12px; }
+        .formula-card { background: #f8faff; border: 1px solid #e8edf5; border-radius: 10px; padding: 14px 16px; }
+        .formula-card .fc-name { font-size: 0.75rem; text-transform: uppercase; color: #7f8c8d; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .formula-card .fc-formula { font-size: 1.05rem; color: var(--secondary-color); line-height: 1.8; }
+        .formula-card .fc-note { font-size: 0.78rem; color: #7f8c8d; margin-top: 5px; font-style: italic; }
+
+        .formula-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
+        .formula-table th { background: #f0f4f8; padding: 8px 12px; text-align: center; font-weight: 600; color: var(--secondary-color); border: 1px solid #e0e7ef; }
+        .formula-table td { padding: 8px 12px; text-align: center; border: 1px solid #e0e7ef; color: #444; }
+        .formula-table tr:nth-child(even) td { background: #fafbfd; }
+
+        .formula-section-body .katex { display: inline !important; font-size: 1em !important; }
+
         @media (max-width: 600px) {
             .menu-grid { grid-template-columns: 1fr; }
             h1 { font-size: 1.8rem; }
             .history-stats { grid-template-columns: 1fr; }
             .history-btn { top: 10px; right: 10px; padding: 8px 14px; font-size: 0.8rem; }
+            .formula-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -212,6 +246,435 @@
         <button class="btn btn-primary" onclick="goToMain()" style="width:100%; margin-top:30px; padding:20px;">Volver a Intentar</button>
     </div>
 </div>
+
+<!-- ==================== FORMULARIO DE FÓRMULAS ==================== -->
+<div class="formulas-container">
+    <button class="formulas-toggle" onclick="toggleFormulas(this)">
+        <span>Formulario de Referencia</span>
+        <span class="arrow">▼</span>
+    </button>
+    <div class="formulas-body" id="formulas-body">
+
+        <!-- 1. CONJUNTOS NUMÉRICOS -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>N</span> Conjuntos Numéricos</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="fc-name">Jerarquía de inclusión</div>
+                        <div class="fc-formula">\(\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}\)</div>
+                        <div class="fc-note">Naturales ⊂ Enteros ⊂ Racionales ⊂ Reales</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Número racional</div>
+                        <div class="fc-formula">\(r = \dfrac{p}{q},\ p,q \in \mathbb{Z},\ q \neq 0\)</div>
+                        <div class="fc-note">Decimal finito o infinito periódico</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Número irracional</div>
+                        <div class="fc-formula">\(\sqrt{2},\ \sqrt{3},\ \pi,\ e\ \notin \mathbb{Q}\)</div>
+                        <div class="fc-note">Decimal infinito NO periódico</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Desigualdad triangular</div>
+                        <div class="fc-formula">\(|a + b| \leq |a| + |b|\)</div>
+                        <div class="fc-note">El valor absoluto nunca es negativo</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Densidad de Q</div>
+                        <div class="fc-formula">Entre dos reales distintos siempre hay un racional y un irracional</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Racional + Irracional</div>
+                        <div class="fc-formula">\(r + i = \text{irracional}\)</div>
+                        <div class="fc-note">Suma/diferencia de racional e irracional es irracional</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. POTENCIACIÓN Y RADICACIÓN -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>P</span> Potenciación y Radicación</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="fc-name">Producto de potencias</div>
+                        <div class="fc-formula">\(a^m \cdot a^n = a^{m+n}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Cociente de potencias</div>
+                        <div class="fc-formula">\(\dfrac{a^m}{a^n} = a^{m-n}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Potencia de potencia</div>
+                        <div class="fc-formula">\((a^m)^n = a^{m \cdot n}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Potencia de producto</div>
+                        <div class="fc-formula">\((a \cdot b)^n = a^n \cdot b^n\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Potencia de cociente</div>
+                        <div class="fc-formula">\(\left(\dfrac{a}{b}\right)^n = \dfrac{a^n}{b^n}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Exponente cero</div>
+                        <div class="fc-formula">\(a^0 = 1 \quad (a \neq 0)\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Exponente negativo</div>
+                        <div class="fc-formula">\(a^{-n} = \dfrac{1}{a^n}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Exponente fraccionario</div>
+                        <div class="fc-formula">\(a^{m/n} = \sqrt[n]{a^m} = \left(\sqrt[n]{a}\right)^m\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Raíz de producto</div>
+                        <div class="fc-formula">\(\sqrt[n]{a \cdot b} = \sqrt[n]{a} \cdot \sqrt[n]{b}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Raíz de potencia par</div>
+                        <div class="fc-formula">\(\sqrt{a^2} = |a|\)</div>
+                        <div class="fc-note">No es simplemente a, sino el valor absoluto</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PRODUCTOS NOTABLES -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>A</span> Productos Notables y Factorización</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="fc-name">Cuadrado de binomio (suma)</div>
+                        <div class="fc-formula">\((a + b)^2 = a^2 + 2ab + b^2\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Cuadrado de binomio (resta)</div>
+                        <div class="fc-formula">\((a - b)^2 = a^2 - 2ab + b^2\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Diferencia de cuadrados</div>
+                        <div class="fc-formula">\(a^2 - b^2 = (a+b)(a-b)\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Cubo de binomio (suma)</div>
+                        <div class="fc-formula">\((a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Cubo de binomio (resta)</div>
+                        <div class="fc-formula">\((a-b)^3 = a^3 - 3a^2b + 3ab^2 - b^3\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Suma de cubos</div>
+                        <div class="fc-formula">\(a^3 + b^3 = (a+b)(a^2 - ab + b^2)\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Diferencia de cubos</div>
+                        <div class="fc-formula">\(a^3 - b^3 = (a-b)(a^2 + ab + b^2)\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Trinomio cuadrado perfecto</div>
+                        <div class="fc-formula">\(a^2 \pm 2ab + b^2 = (a \pm b)^2\)</div>
+                        <div class="fc-note">El término central = 2 × √(1er término) × √(3er término)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Teorema del Factor</div>
+                        <div class="fc-formula">\(P(c) = 0 \Leftrightarrow (x - c) \mid P(x)\)</div>
+                        <div class="fc-note">Si c es raíz, (x-c) es factor del polinomio</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Teorema del Resto</div>
+                        <div class="fc-formula">Resto de \(P(x) \div (x-c)\) es \(P(c)\)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. ECUACIONES CUADRÁTICAS -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>E</span> Ecuaciones Cuadráticas</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card" style="border-color: #4a90e2; background: #f0f6ff;">
+                        <div class="fc-name">Fórmula Resolvente (Bhaskara)</div>
+                        <div class="fc-formula">\(x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}\)</div>
+                        <div class="fc-note">Para \(ax^2 + bx + c = 0\) con \(a \neq 0\)</div>
+                    </div>
+                    <div class="formula-card" style="border-color: #4a90e2; background: #f0f6ff;">
+                        <div class="fc-name">Discriminante \(\Delta\)</div>
+                        <div class="fc-formula">\(\Delta = b^2 - 4ac\)</div>
+                        <div class="fc-note">
+                            \(\Delta > 0\): 2 raíces reales distintas<br>
+                            \(\Delta = 0\): 1 raíz doble<br>
+                            \(\Delta < 0\): sin raíces reales
+                        </div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Relaciones de Vieta</div>
+                        <div class="fc-formula">\(x_1 + x_2 = -\dfrac{b}{a}\)</div>
+                        <div class="fc-formula">\(x_1 \cdot x_2 = \dfrac{c}{a}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Propiedad del producto nulo</div>
+                        <div class="fc-formula">\(A \cdot B = 0 \Rightarrow A=0 \ \text{o} \ B=0\)</div>
+                        <div class="fc-note">Base para resolver ecuaciones factorizadas</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Ecuaciones con módulo</div>
+                        <div class="fc-formula">\(|x| = k \Rightarrow x = k \ \text{o} \ x = -k\)</div>
+                        <div class="fc-note">Solo si \(k \geq 0\), si \(k < 0\) no hay solución</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Ecuación de raíz cuadrada</div>
+                        <div class="fc-formula">\(\sqrt{f(x)} = k \Rightarrow f(x) = k^2,\ k \geq 0\)</div>
+                        <div class="fc-note">Siempre verificar en la ecuación original</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. FUNCIONES Y PARÁBOLA -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>F</span> Funciones y Parábola</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="fc-name">Vértice de la parábola</div>
+                        <div class="fc-formula">\(x_v = -\dfrac{b}{2a} \qquad y_v = -\dfrac{\Delta}{4a}\)</div>
+                        <div class="fc-note">\(a>0\): mínimo | \(a<0\): máximo</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Forma canónica (vértice)</div>
+                        <div class="fc-formula">\(f(x) = a(x - h)^2 + k\)</div>
+                        <div class="fc-note">Vértice en \((h, k)\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Eje de simetría</div>
+                        <div class="fc-formula">\(x = -\dfrac{b}{2a} = \dfrac{x_1 + x_2}{2}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Intersección con eje y</div>
+                        <div class="fc-formula">\(f(0) = c\) → punto \((0,\ c)\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Pendiente de recta</div>
+                        <div class="fc-formula">\(m = \dfrac{y_2 - y_1}{x_2 - x_1}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Ecuación de recta</div>
+                        <div class="fc-formula">\(y = mx + b\)</div>
+                        <div class="fc-note">\(m\): pendiente | \(b\): ordenada al origen</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Rectas paralelas / perpendiculares</div>
+                        <div class="fc-formula">Paralelas: \(m_1 = m_2\)</div>
+                        <div class="fc-formula">Perpendiculares: \(m_1 \cdot m_2 = -1\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Función inversa</div>
+                        <div class="fc-formula">Despejar \(x\) de \(y = f(x)\), luego \(x \leftrightarrow y\)</div>
+                        <div class="fc-note">La inversa de \(a^x\) es \(\log_a x\)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. LOGARITMOS -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>L</span> Logaritmos</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="fc-name">Definición</div>
+                        <div class="fc-formula">\(\log_b x = y \Leftrightarrow b^y = x\)</div>
+                        <div class="fc-note">\(b > 0,\ b \neq 1,\ x > 0\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Log del producto</div>
+                        <div class="fc-formula">\(\log_b(xy) = \log_b x + \log_b y\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Log del cociente</div>
+                        <div class="fc-formula">\(\log_b\!\left(\dfrac{x}{y}\right) = \log_b x - \log_b y\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Log de potencia</div>
+                        <div class="fc-formula">\(\log_b(x^n) = n \cdot \log_b x\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Valores notables</div>
+                        <div class="fc-formula">\(\log_b 1 = 0 \qquad \log_b b = 1\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Cambio de base</div>
+                        <div class="fc-formula">\(\log_b x = \dfrac{\log x}{\log b} = \dfrac{\ln x}{\ln b}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Cancelación</div>
+                        <div class="fc-formula">\(b^{\log_b x} = x \qquad \log_b(b^x) = x\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">¡OJO! Log de suma</div>
+                        <div class="fc-formula">\(\log(A + B) \neq \log A + \log B\)</div>
+                        <div class="fc-note">Error muy frecuente en exámenes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. TRIGONOMETRÍA -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>T</span> Trigonometría</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="fc-name">Razones trigonométricas</div>
+                        <div class="fc-formula">\(\sin\theta = \dfrac{\text{CO}}{H} \quad \cos\theta = \dfrac{\text{CA}}{H} \quad \tan\theta = \dfrac{\text{CO}}{\text{CA}}\)</div>
+                        <div class="fc-note">CO = cateto opuesto, CA = cateto adyacente, H = hipotenusa</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Relación fundamental</div>
+                        <div class="fc-formula">\(\tan\theta = \dfrac{\sin\theta}{\cos\theta}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Identidad pitagórica</div>
+                        <div class="fc-formula">\(\sin^2\theta + \cos^2\theta = 1\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Teorema de Pitágoras</div>
+                        <div class="fc-formula">\(a^2 + b^2 = c^2\)</div>
+                        <div class="fc-note">\(c\) = hipotenusa (frente al ángulo recto)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Ángulo doble</div>
+                        <div class="fc-formula">\(\sin(2\theta) = 2\sin\theta\cos\theta\)</div>
+                        <div class="fc-formula">\(\cos(2\theta) = \cos^2\theta - \sin^2\theta\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Suma de ángulos de triángulo</div>
+                        <div class="fc-formula">\(\alpha + \beta + \gamma = 180°\)</div>
+                    </div>
+                </div>
+                <table class="formula-table" style="margin-top:15px;">
+                    <tr>
+                        <th>Ángulo</th>
+                        <th>\(0°\)</th>
+                        <th>\(30°\)</th>
+                        <th>\(45°\)</th>
+                        <th>\(60°\)</th>
+                        <th>\(90°\)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>sen</strong></td>
+                        <td>\(0\)</td>
+                        <td>\(\frac{1}{2}\)</td>
+                        <td>\(\frac{\sqrt{2}}{2}\)</td>
+                        <td>\(\frac{\sqrt{3}}{2}\)</td>
+                        <td>\(1\)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>cos</strong></td>
+                        <td>\(1\)</td>
+                        <td>\(\frac{\sqrt{3}}{2}\)</td>
+                        <td>\(\frac{\sqrt{2}}{2}\)</td>
+                        <td>\(\frac{1}{2}\)</td>
+                        <td>\(0\)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>tan</strong></td>
+                        <td>\(0\)</td>
+                        <td>\(\frac{\sqrt{3}}{3}\)</td>
+                        <td>\(1\)</td>
+                        <td>\(\sqrt{3}\)</td>
+                        <td>indef.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- 8. GEOMETRÍA -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>G</span> Geometría — Áreas y Perímetros</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="fc-name">Cuadrado (lado \(l\))</div>
+                        <div class="fc-formula">\(A = l^2 \qquad P = 4l\)</div>
+                        <div class="fc-formula">\(d = l\sqrt{2}\) (diagonal)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Rectángulo (base \(b\), altura \(h\))</div>
+                        <div class="fc-formula">\(A = b \cdot h \qquad P = 2(b + h)\)</div>
+                        <div class="fc-formula">\(d = \sqrt{b^2 + h^2}\) (diagonal)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Triángulo</div>
+                        <div class="fc-formula">\(A = \dfrac{b \cdot h}{2} \qquad P = a + b + c\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Triángulo equilátero (lado \(l\))</div>
+                        <div class="fc-formula">\(A = \dfrac{l^2\sqrt{3}}{4} \qquad h = \dfrac{l\sqrt{3}}{2}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Triángulo rectángulo 45-45-90</div>
+                        <div class="fc-formula">Catetos \(= l\), hipotenusa \(= l\sqrt{2}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Triángulo rectángulo 30-60-90</div>
+                        <div class="fc-formula">Catetos \(\frac{h}{2}\) y \(\frac{h\sqrt{3}}{2}\), hipotenusa \(h\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Círculo (radio \(r\))</div>
+                        <div class="fc-formula">\(A = \pi r^2 \qquad C = 2\pi r\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Sector circular (ángulo \(\theta\) en rad)</div>
+                        <div class="fc-formula">\(A = \dfrac{\theta r^2}{2} \qquad \text{arco} = r\theta\)</div>
+                        <div class="fc-formula">\(P = 2r + r\theta\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Trapecio (bases \(B\) y \(b\))</div>
+                        <div class="fc-formula">\(A = \dfrac{(B + b) \cdot h}{2}\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Escalado de figuras</div>
+                        <div class="fc-formula">Si lados \(\times k\) → \(A \times k^2\)</div>
+                        <div class="fc-note">Duplicar lados cuadruplica el área</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- fin formulas-body -->
+</div><!-- fin formulas-container -->
 
 <script>
     // ==================== BANCO DE PREGUNTAS DEFINITIVO ====================
@@ -655,9 +1118,21 @@
         document.getElementById(id).classList.add('active');
     }
 
+    // ==================== TOGGLES DEL FORMULARIO ====================
+    function toggleFormulas(btn) {
+        btn.classList.toggle('open');
+        const body = document.getElementById('formulas-body');
+        body.classList.toggle('open');
+    }
+
+    function toggleSection(header) {
+        header.classList.toggle('open');
+        const body = header.nextElementSibling;
+        body.classList.toggle('open');
+    }
+
     // Inicializar KaTeX cuando esté listo
     document.addEventListener('DOMContentLoaded', function() {
-        // Esperar a que KaTeX se cargue
         const checkKatex = setInterval(() => {
             if (typeof renderMathInElement === 'function') {
                 clearInterval(checkKatex);
