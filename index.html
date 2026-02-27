@@ -151,6 +151,52 @@
         .formula-table td { padding: 8px 12px; text-align: center; border: 1px solid #e0e7ef; color: #444; }
         .formula-table tr:nth-child(even) td { background: #fafbfd; }
 
+        /* Subsecciones dentro de un bloque */
+        .formula-subsection-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: var(--primary-color); margin: 20px 0 4px; border-bottom: 2px solid #e8edf5; padding-bottom: 6px; }
+
+        /* Tarjetas de las 3 formas */
+        .forms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; }
+        .form-card { border-radius: 12px; padding: 16px; border: 2px solid; }
+        .form-card.general  { border-color: #4a90e2; background: #f0f6ff; }
+        .form-card.vertex   { border-color: #27ae60; background: #f0faf4; }
+        .form-card.factored { border-color: #e67e22; background: #fdf6ee; }
+        .form-card .form-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+        .form-card.general  .form-label { color: #4a90e2; }
+        .form-card.vertex   .form-label { color: #27ae60; }
+        .form-card.factored .form-label { color: #e67e22; }
+        .form-card .form-eq { font-size: 1rem; color: var(--secondary-color); margin-bottom: 8px; line-height: 1.9; }
+        .form-card .form-reads { font-size: 0.78rem; color: #555; line-height: 1.6; }
+        .form-card .form-reads strong { color: var(--secondary-color); }
+
+        /* Tabla de conversiones */
+        .conv-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        .conv-table th { padding: 9px 12px; background: #2c3e50; color: white; text-align: left; font-weight: 600; }
+        .conv-table td { padding: 9px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .conv-table tr:hover td { background: #f8f9fa; }
+        .conv-table .conv-from { font-weight: 600; color: var(--secondary-color); white-space: nowrap; }
+        .conv-table .conv-how { color: #444; line-height: 1.6; }
+
+        /* Pasos numerados */
+        .steps-list { margin-top: 10px; padding-left: 0; list-style: none; }
+        .steps-list li { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; color: #444; line-height: 1.6; }
+        .steps-list li:last-child { border-bottom: none; }
+        .step-num { background: var(--primary-color); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+        /* Análisis de signo */
+        .sign-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .sign-card { border-radius: 10px; padding: 14px; border: 1px solid; }
+        .sign-card.pos { border-color: #27ae60; background: #f0faf4; }
+        .sign-card.neg { border-color: #e74c3c; background: #fdf0f0; }
+        .sign-card .sign-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+        .sign-card.pos .sign-title { color: #27ae60; }
+        .sign-card.neg .sign-title { color: #e74c3c; }
+        .sign-card .sign-content { font-size: 0.83rem; color: #444; line-height: 1.7; }
+
+        @media (max-width: 650px) {
+            .forms-grid { grid-template-columns: 1fr; }
+            .sign-grid  { grid-template-columns: 1fr; }
+        }
+
         .formula-section-body .katex { display: inline !important; font-size: 1em !important; }
 
         @media (max-width: 600px) {
@@ -406,10 +452,102 @@
         <!-- 4. ECUACIONES CUADRÁTICAS -->
         <div class="formula-section">
             <div class="formula-section-header open" onclick="toggleSection(this)">
-                <h3><span>E</span> Ecuaciones Cuadráticas</h3>
+                <h3><span>E</span> Ecuaciones y Funciones Cuadráticas</h3>
                 <span class="sec-arrow">▼</span>
             </div>
             <div class="formula-section-body open">
+
+                <!-- Las 3 formas -->
+                <div class="formula-subsection-title">Las 3 formas de la función cuadrática</div>
+                <div class="forms-grid">
+                    <div class="form-card general">
+                        <div class="form-label">Forma General / Polinómica</div>
+                        <div class="form-eq">\(f(x) = ax^2 + bx + c\)</div>
+                        <div class="form-reads">
+                            <strong>Lectura directa:</strong><br>
+                            · Coef. principal: \(a\)<br>
+                            · Ordenada al origen: \((0,\ c)\)<br>
+                            · Cóncava arriba si \(a>0\), abajo si \(a < 0\)<br><br>
+                            <strong>Usar para:</strong> Bhaskara, calcular vértice
+                        </div>
+                    </div>
+                    <div class="form-card vertex">
+                        <div class="form-label">Forma Canónica / Vértice</div>
+                        <div class="form-eq">\(f(x) = a(x - h)^2 + k\)</div>
+                        <div class="form-reads">
+                            <strong>Lectura directa:</strong><br>
+                            · Vértice: \((h,\ k)\)<br>
+                            · Eje de simetría: \(x = h\)<br>
+                            · Máx/mín = \(k\)<br><br>
+                            <strong>Usar para:</strong> leer vértice, analizar extremos
+                        </div>
+                    </div>
+                    <div class="form-card factored">
+                        <div class="form-label">Forma Factorizada</div>
+                        <div class="form-eq">\(f(x) = a(x - r_1)(x - r_2)\)</div>
+                        <div class="form-reads">
+                            <strong>Lectura directa:</strong><br>
+                            · Raíces: \(r_1\) y \(r_2\)<br>
+                            · Intersecciones con eje \(x\)<br>
+                            · Solo existe si \(\Delta \geq 0\)<br><br>
+                            <strong>Usar para:</strong> ver dónde cruza el eje \(x\)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cómo convertir entre formas -->
+                <div class="formula-subsection-title">Cómo convertir entre formas</div>
+                <table class="conv-table">
+                    <tr>
+                        <th>De →</th>
+                        <th>A →</th>
+                        <th>Cómo hacerlo</th>
+                    </tr>
+                    <tr>
+                        <td class="conv-from">General</td>
+                        <td class="conv-from" style="color:#27ae60;">Canónica</td>
+                        <td class="conv-how">Calcular \(h = -\frac{b}{2a}\) y \(k = f(h)\). Reemplazar en \(a(x-h)^2+k\).</td>
+                    </tr>
+                    <tr>
+                        <td class="conv-from">General</td>
+                        <td class="conv-from" style="color:#e67e22;">Factorizada</td>
+                        <td class="conv-how">Hallar raíces con Bhaskara: \(r_{1,2} = \frac{-b \pm \sqrt{\Delta}}{2a}\). Escribir \(a(x-r_1)(x-r_2)\). Solo posible si \(\Delta \geq 0\).</td>
+                    </tr>
+                    <tr>
+                        <td class="conv-from" style="color:#27ae60;">Canónica</td>
+                        <td class="conv-from">General</td>
+                        <td class="conv-how">Expandir \((x-h)^2 = x^2 - 2hx + h^2\). Distribuir \(a\) y sumar \(k\).</td>
+                    </tr>
+                    <tr>
+                        <td class="conv-from" style="color:#27ae60;">Canónica</td>
+                        <td class="conv-from" style="color:#e67e22;">Factorizada</td>
+                        <td class="conv-how">Resolver \(a(x-h)^2 + k = 0\): \(x = h \pm \sqrt{-k/a}\). Luego escribir \(a(x-r_1)(x-r_2)\).</td>
+                    </tr>
+                    <tr>
+                        <td class="conv-from" style="color:#e67e22;">Factorizada</td>
+                        <td class="conv-from">General</td>
+                        <td class="conv-how">Expandir el producto \((x-r_1)(x-r_2)\) y multiplicar todo por \(a\).</td>
+                    </tr>
+                    <tr>
+                        <td class="conv-from" style="color:#e67e22;">Factorizada</td>
+                        <td class="conv-from" style="color:#27ae60;">Canónica</td>
+                        <td class="conv-how">El vértice está en \(h = \frac{r_1+r_2}{2}\) (punto medio entre raíces). Calcular \(k = f(h)\).</td>
+                    </tr>
+                </table>
+
+                <!-- Completar el cuadrado -->
+                <div class="formula-subsection-title">Completar el cuadrado (General → Canónica, paso a paso)</div>
+                <p style="font-size:0.85rem; color:#555; margin-top:6px;">Ejemplo: convertir \(f(x) = 2x^2 - 8x + 5\) a forma canónica.</p>
+                <ol class="steps-list">
+                    <li><span class="step-num">1</span><span>Sacar factor \(a\) de los términos con \(x\): \(\ f(x) = 2(x^2 - 4x) + 5\)</span></li>
+                    <li><span class="step-num">2</span><span>Tomar el coef. de \(x\), dividirlo por 2 y elevarlo al cuadrado: \(\left(\frac{-4}{2}\right)^2 = 4\)</span></li>
+                    <li><span class="step-num">3</span><span>Sumar y restar ese valor dentro: \(\ f(x) = 2(x^2 - 4x + 4 - 4) + 5\)</span></li>
+                    <li><span class="step-num">4</span><span>Separar el TCP y sacar lo que "sobra": \(\ f(x) = 2(x^2 - 4x + 4) + 2(-4) + 5\)</span></li>
+                    <li><span class="step-num">5</span><span>Factorizar el TCP y simplificar: \(\ f(x) = 2(x - 2)^2 - 3\). Vértice en \((2,\ -3)\).</span></li>
+                </ol>
+
+                <!-- Fórmulas clásicas -->
+                <div class="formula-subsection-title">Fórmulas y propiedades clave</div>
                 <div class="formula-grid">
                     <div class="formula-card" style="border-color: #4a90e2; background: #f0f6ff;">
                         <div class="fc-name">Fórmula Resolvente (Bhaskara)</div>
@@ -421,14 +559,19 @@
                         <div class="fc-formula">\(\Delta = b^2 - 4ac\)</div>
                         <div class="fc-note">
                             \(\Delta > 0\): 2 raíces reales distintas<br>
-                            \(\Delta = 0\): 1 raíz doble<br>
+                            \(\Delta = 0\): 1 raíz doble \(\Leftrightarrow\) vértice toca eje \(x\)<br>
                             \(\Delta < 0\): sin raíces reales
                         </div>
                     </div>
                     <div class="formula-card">
+                        <div class="fc-name">Vértice</div>
+                        <div class="fc-formula">\(h = -\dfrac{b}{2a} \qquad k = -\dfrac{\Delta}{4a}\)</div>
+                        <div class="fc-note">\(a>0\): mínimo absoluto en \(k\) | \(a<0\): máximo absoluto en \(k\)</div>
+                    </div>
+                    <div class="formula-card">
                         <div class="fc-name">Relaciones de Vieta</div>
-                        <div class="fc-formula">\(x_1 + x_2 = -\dfrac{b}{a}\)</div>
-                        <div class="fc-formula">\(x_1 \cdot x_2 = \dfrac{c}{a}\)</div>
+                        <div class="fc-formula">\(r_1 + r_2 = -\dfrac{b}{a} \qquad r_1 \cdot r_2 = \dfrac{c}{a}\)</div>
+                        <div class="fc-note">Útil para verificar raíces sin calcularlas</div>
                     </div>
                     <div class="formula-card">
                         <div class="fc-name">Propiedad del producto nulo</div>
@@ -438,14 +581,37 @@
                     <div class="formula-card">
                         <div class="fc-name">Ecuaciones con módulo</div>
                         <div class="fc-formula">\(|x| = k \Rightarrow x = k \ \text{o} \ x = -k\)</div>
-                        <div class="fc-note">Solo si \(k \geq 0\), si \(k < 0\) no hay solución</div>
+                        <div class="fc-note">Solo si \(k \geq 0\). Si \(k < 0\) no hay solución real</div>
                     </div>
                     <div class="formula-card">
-                        <div class="fc-name">Ecuación de raíz cuadrada</div>
-                        <div class="fc-formula">\(\sqrt{f(x)} = k \Rightarrow f(x) = k^2,\ k \geq 0\)</div>
-                        <div class="fc-note">Siempre verificar en la ecuación original</div>
+                        <div class="fc-name">Ecuación con raíz cuadrada</div>
+                        <div class="fc-formula">\(\sqrt{f(x)} = k \Rightarrow f(x) = k^2,\ \ k \geq 0\)</div>
+                        <div class="fc-note">Siempre verificar: la raíz devuelve solo valor positivo</div>
                     </div>
                 </div>
+
+                <!-- Análisis de signo -->
+                <div class="formula-subsection-title">Análisis de signo de la parábola \(f(x) = a(x-r_1)(x-r_2)\)</div>
+                <div class="sign-grid">
+                    <div class="sign-card pos">
+                        <div class="sign-title">Parábola cóncava arriba (\(a > 0\))</div>
+                        <div class="sign-content">
+                            \(f(x) > 0\) fuera de las raíces: \(x < r_1\) o \(x > r_2\)<br>
+                            \(f(x) < 0\) entre las raíces: \(r_1 < x < r_2\)<br>
+                            <em>Mnemotecnia: "abre hacia arriba = positivo afuera"</em>
+                        </div>
+                    </div>
+                    <div class="sign-card neg">
+                        <div class="sign-title">Parábola cóncava abajo (\(a < 0\))</div>
+                        <div class="sign-content">
+                            \(f(x) > 0\) entre las raíces: \(r_1 < x < r_2\)<br>
+                            \(f(x) < 0\) fuera de las raíces: \(x < r_1\) o \(x > r_2\)<br>
+                            <em>Mnemotecnia: "abre hacia abajo = positivo adentro"</em>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size:0.8rem; color:#7f8c8d; margin-top:8px; font-style:italic;">Si \(\Delta = 0\): la parábola solo toca el eje \(x\) en un punto; \(f(x) \geq 0\) siempre si \(a>0\), o \(f(x) \leq 0\) siempre si \(a < 0\).<br>Si \(\Delta < 0\): la parábola no corta el eje \(x\); el signo de \(f(x)\) es siempre igual al signo de \(a\).</p>
+
             </div>
         </div>
 
@@ -670,6 +836,83 @@
                         <div class="fc-note">Duplicar lados cuadruplica el área</div>
                     </div>
                 </div>
+                <div class="formula-subsection-title">Ternas pitagóricas comunes (memorizarlas)</div>
+                <table class="formula-table">
+                    <tr><th>Terna</th><th>Verificación \(a^2+b^2=c^2\)</th><th>Múltiplos útiles</th></tr>
+                    <tr><td>\(3 - 4 - 5\)</td><td>\(9+16=25\) ✓</td><td>6-8-10, 9-12-15</td></tr>
+                    <tr><td>\(5 - 12 - 13\)</td><td>\(25+144=169\) ✓</td><td>10-24-26</td></tr>
+                    <tr><td>\(8 - 15 - 17\)</td><td>\(64+225=289\) ✓</td><td>—</td></tr>
+                    <tr><td>\(7 - 24 - 25\)</td><td>\(49+576=625\) ✓</td><td>—</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- 9. VALOR ABSOLUTO E INECUACIONES -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>V</span> Valor Absoluto e Inecuaciones</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <div class="formula-grid">
+                    <div class="formula-card">
+                        <div class="fc-name">Definición</div>
+                        <div class="fc-formula">\(|x| = \begin{cases} x & \text{si } x \geq 0 \\ -x & \text{si } x < 0 \end{cases}\)</div>
+                        <div class="fc-note">Siempre devuelve un valor no negativo</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Ecuación con módulo</div>
+                        <div class="fc-formula">\(|x| = k \Rightarrow x = k \ \text{o} \ x = -k\)</div>
+                        <div class="fc-note">Solo tiene solución si \(k \geq 0\)</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Inecuación \(|x| < k\)</div>
+                        <div class="fc-formula">\(|x| < k \Leftrightarrow -k < x < k\)</div>
+                        <div class="fc-note">Intervalo abierto centrado en 0</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Inecuación \(|x| > k\)</div>
+                        <div class="fc-formula">\(|x| > k \Leftrightarrow x < -k \ \text{o} \ x > k\)</div>
+                        <div class="fc-note">Unión de dos intervalos</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Desigualdad triangular</div>
+                        <div class="fc-formula">\(|a + b| \leq |a| + |b|\)</div>
+                        <div class="fc-note">La igualdad se da solo cuando \(a\) y \(b\) tienen el mismo signo</div>
+                    </div>
+                    <div class="formula-card">
+                        <div class="fc-name">Propiedades útiles</div>
+                        <div class="fc-formula">\(|a \cdot b| = |a| \cdot |b|\)</div>
+                        <div class="fc-formula">\(\left|\dfrac{a}{b}\right| = \dfrac{|a|}{|b|}\)</div>
+                        <div class="fc-formula">\(\sqrt{a^2} = |a|\)</div>
+                    </div>
+                </div>
+                <div class="formula-subsection-title">Reglas para inecuaciones</div>
+                <ol class="steps-list">
+                    <li><span class="step-num">!</span><span>Sumar o restar en ambos lados: el signo de la desigualdad <strong>no cambia</strong>.</span></li>
+                    <li><span class="step-num">!</span><span>Multiplicar o dividir por un número <strong>positivo</strong>: el signo <strong>no cambia</strong>.</span></li>
+                    <li><span class="step-num">!</span><span>Multiplicar o dividir por un número <strong>negativo</strong>: el signo <strong>se invierte</strong> (\(<\) pasa a ser \(>\)).</span></li>
+                    <li><span class="step-num">!</span><span>Para resolver \(ax^2 + bx + c \leq 0\): hallar raíces y analizar el signo de la parábola en cada intervalo.</span></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 10. DOMINIO DE FUNCIONES -->
+        <div class="formula-section">
+            <div class="formula-section-header open" onclick="toggleSection(this)">
+                <h3><span>D</span> Dominio de Funciones Comunes</h3>
+                <span class="sec-arrow">▼</span>
+            </div>
+            <div class="formula-section-body open">
+                <table class="formula-table">
+                    <tr><th>Función</th><th>Restricción</th><th>Dominio</th></tr>
+                    <tr><td>\(f(x) = ax^n + \cdots\) (polinomio)</td><td>Ninguna</td><td>\(\mathbb{R}\)</td></tr>
+                    <tr><td>\(f(x) = \dfrac{P(x)}{Q(x)}\) (racional)</td><td>\(Q(x) \neq 0\)</td><td>\(\mathbb{R} \setminus \{x : Q(x)=0\}\)</td></tr>
+                    <tr><td>\(f(x) = \sqrt{g(x)}\) (raíz par)</td><td>\(g(x) \geq 0\)</td><td>Resolver la inecuación</td></tr>
+                    <tr><td>\(f(x) = \sqrt[3]{g(x)}\) (raíz impar)</td><td>Ninguna</td><td>\(\mathbb{R}\)</td></tr>
+                    <tr><td>\(f(x) = \log_b g(x)\)</td><td>\(g(x) > 0\)</td><td>Resolver \(g(x) > 0\)</td></tr>
+                    <tr><td>\(f(x) = b^x\)</td><td>Ninguna</td><td>\(\mathbb{R}\)</td></tr>
+                </table>
             </div>
         </div>
 
